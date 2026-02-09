@@ -1,63 +1,56 @@
-import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import Login from './pages/Login';
+import RoleRoute from './routes/RoleRoute';
+import GuestRoute from './routes/GuestRoute';
+
+// Placeholder components (bikin nanti)
+import DashboardMahasiswa from './components/mahasiswa/DashboardMahasiswa';
+import DashboardDosen from './components/dosen/DashboardDosen';
+import DashboardKaprodi from './components/kaprodi/DashboardKaprodi';
+import DashboardAdmin from './components/admin/DashboardAdmin';
+import Unauthorized from './pages/Unauthorized';
+import NotFound from './pages/NotFound';
 
 function App() {
-  const [message, setMessage] = useState('Testing CORS...');
-  const [status, setStatus] = useState('loading');
-
-  useEffect(() => {
-    // Test fetch ke Laravel API
-    fetch('http://localhost:8000/api/test')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('✅ Response from Laravel:', data);
-        setMessage(data.message);
-        setStatus('success');
-      })
-      .catch(error => {
-        console.error('❌ CORS Error:', error);
-        setMessage('CORS Error! Check console (F12)');
-        setStatus('error');
-      });
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full">
-        <h1 className="text-3xl font-bold text-indigo-600 mb-4">
-          CORS Test
-        </h1>
-        
-        <div className={`p-4 rounded-lg mb-4 ${
-          status === 'success' ? 'bg-green-100 border border-green-400' :
-          status === 'error' ? 'bg-red-100 border border-red-400' :
-          'bg-gray-100 border border-gray-400'
-        }`}>
-          <p className={`text-lg font-medium ${
-            status === 'success' ? 'text-green-800' :
-            status === 'error' ? 'text-red-800' :
-            'text-gray-800'
-          }`}>
-            {message}
-          </p>
-        </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          {/* Guest routes - only accessible when not logged in */}
+          <Route element={<GuestRoute />}>
+            <Route path="/login" element={<Login />} />
+          </Route>
+          <Route path="/unauthorized" element={<Unauthorized />} />
 
-        <div className="text-sm text-gray-600">
-          <p><strong>Laravel API:</strong> http://localhost:8000/api/test</p>
-          <p><strong>React App:</strong> http://localhost:5173</p>
-        </div>
+          {/* Protected routes - Mahasiswa */}
+          <Route element={<RoleRoute allowedRoles={['mahasiswa']} />}>
+            <Route path="/mahasiswa" element={<DashboardMahasiswa />} />
+          </Route>
 
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <p className="text-sm text-blue-800">
-            💡 <strong>Tip:</strong> Buka Console (F12) untuk lihat detail response
-          </p>
-        </div>
-      </div>
-    </div>
+          {/* Protected routes - Dosen */}
+          <Route element={<RoleRoute allowedRoles={['dosen']} />}>
+            <Route path="/dosen" element={<DashboardDosen />} />
+          </Route>
+
+          {/* Protected routes - Kaprodi */}
+          <Route element={<RoleRoute allowedRoles={['kaprodi']} />}>
+            <Route path="/kaprodi" element={<DashboardKaprodi />} />
+          </Route>
+
+          {/* Protected routes - Admin */}
+          <Route element={<RoleRoute allowedRoles={['admin']} />}>
+            <Route path="/admin" element={<DashboardAdmin />} />
+          </Route>
+
+          {/* Default redirect */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
