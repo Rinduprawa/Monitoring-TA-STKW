@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import FormInput from '../components/common/FormInput';
+import FormInput from '../components/form/FormInput';
 
 function Login() {
   const [identifier, setIdentifier] = useState('');

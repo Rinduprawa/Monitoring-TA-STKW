@@ -1,8 +1,6 @@
-// src/pages/admin/KaprodiForm.jsx
-
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import FormSelect from '../../components/common/FormSelect';
+import FormSelect from '../../components/form/FormSelect';
 
 export default function KaprodiForm({ 
   kaprodiData, 
@@ -99,17 +97,17 @@ export default function KaprodiForm({
 
   return (
       <div>
-                    <button
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold">Edit Kepala Program Studi</h1>
+          <button
             type="button"
             onClick={onCancel}
             disabled={loading}
             className="px-4 py-2 border border-gray-300 hover:bg-gray-50 disabled:opacity-50"
           >
-            Batal
+            Kembali
           </button>
-      <h2 className="text-2xl font-medium mb-6">
-        Edit Kepala Program Studi
-      </h2>
+      </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl">
         {/* Info Prodi (read-only) */}

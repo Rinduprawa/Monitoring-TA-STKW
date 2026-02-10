@@ -1,5 +1,3 @@
-// src/components/common/DetailField.jsx
-
 export default function DetailField({ label, value, isLast = false }) {
   return (
     <div className={`flex ${!isLast ? 'border-b border-gray-200' : ''} pb-3`}>

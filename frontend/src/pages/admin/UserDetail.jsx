@@ -1,5 +1,3 @@
-// src/pages/admin/UserDetail.jsx
-
 export default function UserDetail({ 
   userData, 
   activeTab, 
@@ -10,13 +8,13 @@ export default function UserDetail({
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-medium">Detail Pengguna</h2>
-        <button
-          onClick={onClose}
-          className="px-4 py-2 border border-gray-300 hover:bg-gray-50"
-        >
-          Kembali
-        </button>
+        <h1 className="text-2xl font-semibold">Detail Pengguna</h1>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 border border-gray-300 hover:bg-gray-50"
+          >
+            Kembali
+          </button>
       </div>
 
       <div className="max-w-2xl border border-gray-300 bg-white">

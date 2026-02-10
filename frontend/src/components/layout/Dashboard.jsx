@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import LogoutConfirmation from './common/LogoutConfirmation';
-import ChangePasswordModal from './common/ChangePasswordModal';
-import { menuConfig, roleLabels } from '../config/menuConfig';
+import { useAuth } from '../../context/AuthContext';
+import LogoutConfirmation from '../modal/LogoutConfirmation';
+import ChangePasswordModal from '../modal/ChangePassword';
+import { menuConfig, roleLabels } from '../../config/menuConfig';
 
-export default function DashboardLayout() {
+export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -119,15 +119,6 @@ export default function DashboardLayout() {
                 >
                   Ganti Password
                 </button>
-                <button
-                  onClick={() => {
-                    setShowDropdown(false);
-                    setShowLogoutModal(true);
-                  }}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 border-t border-gray-300 text-gray-800"
-                >
-                  Keluar
-                </button>
               </div>
             )}
           </div>
@@ -139,7 +130,6 @@ export default function DashboardLayout() {
         </main>
       </div>
 
-      {/* Modals - same as before */}
       <LogoutConfirmation
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}

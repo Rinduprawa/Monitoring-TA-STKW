@@ -1,5 +1,3 @@
-// src/components/common/FormSelect.jsx
-
 export default function FormSelect({ 
   label, 
   name, 

@@ -1,10 +1,8 @@
-// src/components/common/ChangePasswordModal.jsx
-
 import { useState } from 'react';
 import axios from 'axios';
-import FormInput from './FormInput';
+import FormInput from '../form/FormInput';
 
-export default function ChangePasswordModal({ isOpen, onClose }) {
+export default function ChangePassword({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
     current_password: '',
     new_password: '',

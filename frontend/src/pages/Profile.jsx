@@ -28,7 +28,7 @@ export default function Profile() {
   };
 
   if (loading) {
-    return <div className="p-8">Loading...</div>;
+    return <div className="p-8">Memproses...</div>;
   }
 
   // Determine role label
@@ -122,7 +122,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="p-8">
+    <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">Profil Saya</h1>
         <button

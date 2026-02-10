@@ -1,5 +1,3 @@
-// import { useState } from 'react';
-
 function LogoutConfirmation({ isOpen, onClose, onConfirm }) {
   if (!isOpen) return null;
 

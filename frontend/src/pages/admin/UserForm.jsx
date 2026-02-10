@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import FormInput from '../../components/common/FormInput';
-import FormSelect from '../../components/common/FormSelect';
+import FormInput from '../../components/form/FormInput';
+import FormSelect from '../../components/form/FormSelect';
 
 export default function UserForm({ 
   mode, 
@@ -157,18 +157,20 @@ export default function UserForm({
   };
 
   return (
-      <div>
-                    <button
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold">
+          {mode === 'create' ? 'Tambah' : 'Edit'} Data Pengguna
+        </h1>
+          <button
             type="button"
             onClick={onCancel}
             disabled={loading}
             className="px-4 py-2 border border-gray-300 hover:bg-gray-50 disabled:opacity-50"
           >
-            Batal
+            Kembali
           </button>
-      <h2 className="text-2xl font-medium mb-6">
-        {mode === 'create' ? 'Tambah' : 'Edit'} Pengguna Baru
-      </h2>
+      </div>
 
       {/* Error Summary */}
       {Object.keys(errors).length > 0 && (

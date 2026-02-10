@@ -94,8 +94,8 @@ const handleEdit = (item) => {
   };
 
   const handleView = (item) => {
-  setViewDetail(item);
-  setView('detail');
+    setViewDetail(item);
+    setView('detail');
   };
   
   const handleFormSuccess = () => {
@@ -109,7 +109,7 @@ const handleEdit = (item) => {
     return 'NIP/NIDN';
   };
 
-  // Render Form View
+// Render Form View
 if (view === 'form') {
   if (activeTab === 'kaprodi') {
     return (
