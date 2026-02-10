@@ -41,7 +41,7 @@ class AuthController extends Controller
         // Check user exist dan password benar
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'identifier' => ['The provided credentials are incorrect.'],
+                'identifier' => ['Login gagal. Periksa kembali ID dan PIN Anda.'],
             ]);
         }
 

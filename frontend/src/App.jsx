@@ -4,10 +4,6 @@ import Login from './pages/Login';
 import RoleRoute from './routes/RoleRoute';
 import GuestRoute from './routes/GuestRoute';
 
-// Placeholder components (bikin nanti)
-import DashboardMahasiswa from './components/mahasiswa/DashboardMahasiswa';
-import DashboardDosen from './components/dosen/DashboardDosen';
-import DashboardKaprodi from './components/kaprodi/DashboardKaprodi';
 import DashboardLayout from './components/DashboardLayout';
 import DataPengguna from './pages/admin/DataPengguna';
 import Unauthorized from './pages/Unauthorized';
@@ -28,7 +24,7 @@ function App() {
           {/* Protected routes - Mahasiswa */}
           <Route element={<RoleRoute allowedRoles={['mahasiswa']} />}>
             <Route path="/mahasiswa" element={<DashboardLayout />} >
-              <Route path="/mahasiswa/profile" element={<Profile />} />
+              <Route path="/mahasiswa/profil" element={<Profile />} />
               <Route path="dashboard" element={<div>Dashboard Mahasiswa</div>} />
             </Route>
           </Route>
@@ -36,7 +32,7 @@ function App() {
           {/* Protected routes - Dosen */}
           <Route element={<RoleRoute allowedRoles={['dosen']} />}>
             <Route path="/dosen" element={<DashboardLayout />} >
-              <Route path="/dosen/profile" element={<Profile />} />
+              <Route path="/dosen/profil" element={<Profile />} />
               <Route path="dashboard" element={<div>Dashboard Dosen</div>} />
             </Route>
           </Route>
@@ -44,7 +40,7 @@ function App() {
           {/* Protected routes - Kaprodi */}
           <Route element={<RoleRoute allowedRoles={['kaprodi']} />}>
             <Route path="/kaprodi" element={<DashboardLayout />} >
-              <Route path="/kaprodi/profile" element={<Profile />} />
+              <Route path="/kaprodi/profil" element={<Profile />} />
               <Route path="dashboard" element={<div>Dashboard Kaprodi</div>} />
             </Route>
           </Route>
@@ -52,7 +48,7 @@ function App() {
           {/* Protected routes - Admin */}
           <Route element={<RoleRoute allowedRoles={['admin']} />}>
             <Route path="/admin" element={<DashboardLayout />}>
-              <Route path="/admin/profile" element={<Profile />} />
+              <Route path="/admin/profil" element={<Profile />} />
               <Route path="dashboard" element={<div>Dashboard Admin</div>} />
               <Route path="data-pengguna" element={<DataPengguna />} />
             </Route>

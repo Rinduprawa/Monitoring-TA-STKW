@@ -104,7 +104,7 @@ export default function DashboardLayout() {
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 shadow-lg z-10">
                 <Link
-                  to={`/${user?.role}/profile`}
+                  to={`/${user?.role}/profil`}
                   className="block px-4 py-2 hover:bg-gray-100 text-gray-800"
                   onClick={() => setShowDropdown(false)}
                 >
