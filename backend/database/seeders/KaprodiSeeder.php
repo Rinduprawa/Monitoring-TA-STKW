@@ -27,7 +27,7 @@ class KaprodiSeeder extends Seeder
             $user = User::create([
                 'name' => 'Kaprodi ' . $prodi->nama_prodi,
                 'email' => 'kaprodi' . ($index + 1) . '@ta.test',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('1234567890'),
                 'role' => 'kaprodi',
                 'is_active' => true,
             ]);

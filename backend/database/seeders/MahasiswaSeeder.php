@@ -49,7 +49,7 @@ class MahasiswaSeeder extends Seeder
             $user = User::create([
                 'name' => $mhsData['nama'],
                 'email' => 'mhs' . ($index + 1) . '@ta.test',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('1234567890'),
                 'role' => 'mahasiswa',
                 'is_active' => true,
             ]);

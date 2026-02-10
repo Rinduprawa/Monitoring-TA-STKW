@@ -13,9 +13,8 @@ return new class extends Migration {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('login_id')->unique();
             $table->string('email')->unique()->nullable();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->boolean('password_changed')->default(false);
             $table->string('password');
             $table->enum('role', ['mahasiswa', 'dosen', 'kaprodi', 'admin'])->index('idx_role');
             $table->boolean('is_active')->nullable()->default(true)->index('idx_is_active');

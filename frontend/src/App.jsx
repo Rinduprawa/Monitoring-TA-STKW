@@ -8,9 +8,11 @@ import GuestRoute from './routes/GuestRoute';
 import DashboardMahasiswa from './components/mahasiswa/DashboardMahasiswa';
 import DashboardDosen from './components/dosen/DashboardDosen';
 import DashboardKaprodi from './components/kaprodi/DashboardKaprodi';
-import DashboardAdmin from './components/admin/DashboardAdmin';
+import AdminLayout from './components/admin/AdminLayout';
+import DataPengguna from './pages/admin/DataPengguna';
 import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -26,21 +28,28 @@ function App() {
           {/* Protected routes - Mahasiswa */}
           <Route element={<RoleRoute allowedRoles={['mahasiswa']} />}>
             <Route path="/mahasiswa" element={<DashboardMahasiswa />} />
+            <Route path="/mahasiswa/profile" element={<Profile />} />
           </Route>
 
           {/* Protected routes - Dosen */}
           <Route element={<RoleRoute allowedRoles={['dosen']} />}>
             <Route path="/dosen" element={<DashboardDosen />} />
+            <Route path="/dosen/profile" element={<Profile />} />
           </Route>
 
           {/* Protected routes - Kaprodi */}
           <Route element={<RoleRoute allowedRoles={['kaprodi']} />}>
             <Route path="/kaprodi" element={<DashboardKaprodi />} />
+            <Route path="/kaprodi/profile" element={<Profile />} />
           </Route>
 
           {/* Protected routes - Admin */}
           <Route element={<RoleRoute allowedRoles={['admin']} />}>
-            <Route path="/admin" element={<DashboardAdmin />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="/admin/profile" element={<Profile />} />
+              <Route path="dashboard" element={<div>Dashboard Admin</div>} />
+              <Route path="data-pengguna" element={<DataPengguna />} />
+            </Route>
           </Route>
 
           {/* Default redirect */}
