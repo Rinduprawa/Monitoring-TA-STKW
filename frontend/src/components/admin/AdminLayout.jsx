@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import LogoutConfirmation from '../common/LogoutConfirmation';
+import ChangePasswordModal from '../common/ChangePasswordModal';
 
 export default function AdminLayout() {
   const { logout } = useAuth();
@@ -9,6 +10,7 @@ export default function AdminLayout() {
   const location = useLocation();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -82,27 +84,35 @@ export default function AdminLayout() {
             >
               🖼️
             </button>
-
-            {showDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 shadow-lg z-10">
-                <Link 
-                  to="/admin/profile" 
-                  className="block px-4 py-2 hover:bg-gray-100"
-                  onClick={() => setShowDropdown(false)}
-                >
-                  Profil
-                </Link>
-                <button 
-                  onClick={() => {
-                    setShowDropdown(false);
-                    setShowLogoutModal(true);
-                  }}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 border-t border-gray-300"
-                >
-                  Keluar
-                </button>
-              </div>
-            )}
+{showDropdown && (
+  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 shadow-lg z-10">
+    <Link 
+      to="/admin/profile" 
+      className="block px-4 py-2 hover:bg-gray-100 text-gray-800"
+      onClick={() => setShowDropdown(false)}
+    >
+      Profil
+    </Link>
+    <button 
+      onClick={() => {
+        setShowDropdown(false);
+        setShowChangePasswordModal(true);
+      }}
+      className="block w-full text-left px-4 py-2 hover:bg-gray-100 border-t border-gray-300 text-gray-800"
+    >
+      Ganti Password
+    </button>
+    <button 
+      onClick={() => {
+        setShowDropdown(false);
+        setShowLogoutModal(true);
+      }}
+      className="block w-full text-left px-4 py-2 hover:bg-gray-100 border-t border-gray-300 text-gray-800"
+    >
+      Keluar
+    </button>
+  </div>
+)}
           </div>
         </header>
 
@@ -117,6 +127,11 @@ export default function AdminLayout() {
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         onConfirm={handleLogout}
+      />
+            {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={showChangePasswordModal}
+        onClose={() => setShowChangePasswordModal(false)}
       />
     </div>
   );

@@ -133,4 +133,43 @@ class AuthController extends Controller
                 return $user;
         }
     }
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        // Check current password
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'Password lama tidak sesuai',
+                'errors' => [
+                    'current_password' => ['Password lama tidak sesuai']
+                ]
+            ], 422);
+        }
+
+        // Check if new password same as old password
+        if (Hash::check($request->new_password, $user->password)) {
+            return response()->json([
+                'message' => 'Password baru tidak boleh sama dengan password lama',
+                'errors' => [
+                    'new_password' => ['Password baru tidak boleh sama dengan password lama']
+                ]
+            ], 422);
+        }
+
+        // Update password
+        $user->update([
+            'password' => Hash::make($request->new_password),
+            'password_changed' => true,
+        ]);
+
+        return response()->json([
+            'message' => 'Password berhasil diubah'
+        ]);
+    }
 }

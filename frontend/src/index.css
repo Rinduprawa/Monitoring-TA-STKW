@@ -2,8 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom CSS bisa ditambahkan di sini */
-@layer components {
+@layer base {
+  body {
+    @apply text-gray-800;
+  }
+}
+
+/* @layer components {
   .btn-primary {
     @apply bg-primary-600 text-black px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors;
   }
@@ -15,4 +20,4 @@
   .input-field {
     @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500;
   }
-}
+} */

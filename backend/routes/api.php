@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/prodi', [ProdiController::class, 'index']);
     Route::get('/profile', [ProfileController::class, 'show']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
 });
 
 // Khusus mahasiswa
