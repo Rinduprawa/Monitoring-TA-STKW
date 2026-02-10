@@ -237,16 +237,6 @@ if (view === 'form') {
                   <td className="p-3 border-r border-gray-300">
                     {item.user?.email || '-'}
                   </td>
-                  {activeTab !== 'kaprodi' && (
-                    <td className="p-3 border-r border-gray-300">
-                      <span className="px-2 py-1 border border-gray-800 text-sm">
-                        {activeTab === 'dosen' && item.is_kaprodi
-                          ? 'Kepala Program Studi'
-                          : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)
-                        }
-                      </span>
-                    </td>
-                  )}
                   <td className="p-3 flex gap-2">
                     <button
                       onClick={() => handleView(item)}
