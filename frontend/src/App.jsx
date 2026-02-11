@@ -10,6 +10,8 @@ import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
 
+import DashboardMahasiswa from './pages/mahasiswa/Dashboard';
+
 import PendaftaranTA from './pages/mahasiswa/PendaftaranTA';
 import PengajuanProposal from './pages/mahasiswa/PengajuanProposal';
 import FormPendaftaranTA from './pages/mahasiswa/FormPendaftaranTA';
@@ -35,8 +37,10 @@ function App() {
           {/* Protected routes - Mahasiswa */}
           <Route element={<RoleRoute allowedRoles={['mahasiswa']} />}>
             <Route path="/mahasiswa" element={<Dashboard />} >
+              <Route index element={<Navigate to="/mahasiswa/dashboard" replace />} />
+              
+              <Route path="dashboard" element={<DashboardMahasiswa />} />              
               <Route path="/mahasiswa/profil" element={<Profile />} />
-              <Route path="dashboard" element={<div>Dashboard Mahasiswa</div>} />
               <Route path="/mahasiswa/pendaftaran-ta" element={<PendaftaranTA />} />
               <Route path="/mahasiswa/pendaftaran-ta/create" element={<FormPendaftaranTA />} />
               <Route path="/mahasiswa/pendaftaran-ta/edit/:id" element={<FormPendaftaranTA />} />

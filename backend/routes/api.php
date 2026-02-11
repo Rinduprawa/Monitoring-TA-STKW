@@ -8,8 +8,12 @@ use App\Http\Controllers\Api\DosenController;
 use App\Http\Controllers\Api\KaprodiController;
 use App\Http\Controllers\Api\ProdiController;
 use App\Http\Controllers\Api\ProfileController;
+
+use App\Http\Controllers\Api\DashboardMahasiswaController;
+
 use App\Http\Controllers\Api\MahasiswaPendaftaranTAController;
 use App\Http\Controllers\Api\MahasiswaPengajuanProposalController;
+
 use App\Http\Controllers\Api\KaprodiPendaftaranTAController;
 use App\Http\Controllers\Api\KaprodiPengajuanProposalController;
 
@@ -44,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Khusus mahasiswa
 Route::middleware(['auth:sanctum', 'role:mahasiswa'])->group(function () {
+    Route::get('/dashboard', [DashboardMahasiswaController::class, 'index']);
     Route::get('/mahasiswa/profile', [MahasiswaController::class, 'profile']);
 
     Route::get('/pendaftaran-ta', [MahasiswaPendaftaranTAController::class, 'index']);
