@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\MahasiswaPendaftaranTAController;
 use App\Http\Controllers\Api\MahasiswaPengajuanProposalController;
 use App\Http\Controllers\Api\KaprodiPendaftaranTAController;
+use App\Http\Controllers\Api\KaprodiPengajuanProposalController;
+
 
 // Test route
 Route::get('/test', function () {
@@ -69,6 +71,9 @@ Route::middleware(['auth:sanctum', 'role:kaprodi'])->group(function () {
     Route::get('/kaprodi/pendaftaran-ta', [KaprodiPendaftaranTAController::class, 'index']);
     Route::get('/kaprodi/pendaftaran-ta/{id}', [KaprodiPendaftaranTAController::class, 'show']);
     Route::post('/kaprodi/pendaftaran-ta/{id}/validasi', [KaprodiPendaftaranTAController::class, 'validasi']);
+    Route::get('/kaprodi/pengajuan-proposal', [KaprodiPengajuanProposalController::class, 'index']);
+    Route::get('/kaprodi/pengajuan-proposal/{id}', [KaprodiPengajuanProposalController::class, 'show']);
+    Route::post('/kaprodi/pengajuan-proposal/{id}/validasi', [KaprodiPengajuanProposalController::class, 'validasi']);
 });
 
 // Khusus admin

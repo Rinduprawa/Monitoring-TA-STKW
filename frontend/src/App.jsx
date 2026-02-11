@@ -9,13 +9,17 @@ import DataPengguna from './pages/admin/DataPengguna';
 import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
+
 import PendaftaranTA from './pages/mahasiswa/PendaftaranTA';
 import PengajuanProposal from './pages/mahasiswa/PengajuanProposal';
-import PendaftaranTAKaprodi from './pages/kaprodi/PendaftaranTA';
-import ValidasiPendaftaran from './pages/kaprodi/ValidasiPendaftaran';
 import FormPendaftaranTA from './pages/mahasiswa/FormPendaftaranTA';
 import FormPengajuanProposal from './pages/mahasiswa/FormPengajuanProposal';
 import DetailPengajuanProposal from './pages/mahasiswa/DetailPengajuanProposal';
+
+import PendaftaranTAKaprodi from './pages/kaprodi/PendaftaranTA';
+import ValidasiPendaftaran from './pages/kaprodi/ValidasiPendaftaran';
+import PengajuanProposalKaprodi from './pages/kaprodi/PengajuanProposal';
+import ValidasiPengajuanProposal from './pages/kaprodi/ValidasiProposal';
 
 function App() {
   return (
@@ -58,6 +62,8 @@ function App() {
               <Route path="dashboard" element={<div>Dashboard Kaprodi</div>} />
               <Route path="/kaprodi/pendaftaran-ta" element={<PendaftaranTAKaprodi />} />
               <Route path="/kaprodi/pendaftaran-ta/validasi/:id" element={<ValidasiPendaftaran />} />
+              <Route path="/kaprodi/pengajuan-proposal" element={<PengajuanProposalKaprodi />} />
+              <Route path="/kaprodi/pengajuan-proposal/validasi/:id" element={<ValidasiPengajuanProposal />} />
             </Route>
           </Route>
 

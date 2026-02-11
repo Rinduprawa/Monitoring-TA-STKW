@@ -168,49 +168,6 @@ class MahasiswaPengajuanProposalController extends Controller
     }
 
     /**
-     * Delete pengajuan proposal (hanya jika status = diproses)
-     */
-    public function destroy(Request $request, $id)
-    {
-        $user = $request->user();
-        $mahasiswa = Mahasiswa::where('user_id', $user->id)->first();
-
-        if (!$mahasiswa) {
-            return response()->json(['message' => 'Mahasiswa not found'], 404);
-        }
-
-        $pengajuan = PengajuanProposal::where('id', $id)
-            ->where('mahasiswa_id', $mahasiswa->id)
-            ->first();
-
-        if (!$pengajuan) {
-            return response()->json(['message' => 'Pengajuan not found'], 404);
-        }
-
-        // Check apakah masih bisa dihapus
-        if ($pengajuan->status !== 'diproses') {
-            return response()->json(['message' => 'Tidak dapat menghapus pengajuan yang sudah divalidasi'], 403);
-        }
-
-        DB::beginTransaction();
-        try {
-            // Delete file
-            Storage::disk('public')->delete($pengajuan->file_proposal);
-
-            // Delete pengajuan
-            $pengajuan->delete();
-
-            DB::commit();
-
-            return response()->json(['message' => 'Pengajuan proposal berhasil dihapus'], 200);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['message' => 'Gagal menghapus pengajuan: ' . $e->getMessage()], 500);
-        }
-    }
-
-    /**
      * Download file proposal
      */
     public function downloadProposal($id)
@@ -269,8 +226,16 @@ class MahasiswaPengajuanProposalController extends Controller
 
             $path = storage_path('app/public/' . $pengajuan->file_proposal);
 
+            \Log::info('Preview proposal debug', [
+                'id' => $id,
+                'file_proposal' => $pengajuan->file_proposal,
+                'full_path' => $path,
+                'file_exists' => file_exists($path),
+                'user_role' => $user->role
+            ]);
+
             if (!file_exists($path)) {
-                return response()->json(['message' => 'File not found'], 404);
+                return response()->json(['message' => 'File not found at: ' . $path, 'file_proposal' => $pengajuan->file_proposal], 404);
             }
 
             return response()->file($path);
