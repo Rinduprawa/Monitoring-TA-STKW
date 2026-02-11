@@ -9,6 +9,10 @@ import DataPengguna from './pages/admin/DataPengguna';
 import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
+import PendaftaranTA from './pages/mahasiswa/PendaftaranTA';
+import PendaftaranTAKaprodi from './pages/kaprodi/PendaftaranTA';
+import ValidasiPendaftaran from './pages/kaprodi/ValidasiPendaftaran';
+import FormPendaftaranTA from './pages/mahasiswa/FormPendaftaranTA';
 
 function App() {
   return (
@@ -26,6 +30,9 @@ function App() {
             <Route path="/mahasiswa" element={<Dashboard />} >
               <Route path="/mahasiswa/profil" element={<Profile />} />
               <Route path="dashboard" element={<div>Dashboard Mahasiswa</div>} />
+              <Route path="/mahasiswa/pendaftaran-ta" element={<PendaftaranTA />} />
+              <Route path="/mahasiswa/pendaftaran-ta/create" element={<FormPendaftaranTA />} />
+              <Route path="/mahasiswa/pendaftaran-ta/edit/:id" element={<FormPendaftaranTA />} />
             </Route>
           </Route>
 
@@ -42,6 +49,8 @@ function App() {
             <Route path="/kaprodi" element={<Dashboard />} >
               <Route path="/kaprodi/profil" element={<Profile />} />
               <Route path="dashboard" element={<div>Dashboard Kaprodi</div>} />
+              <Route path="/kaprodi/pendaftaran-ta" element={<PendaftaranTAKaprodi />} />
+              <Route path="/kaprodi/pendaftaran-ta/validasi/:id" element={<ValidasiPendaftaran />} />
             </Route>
           </Route>
 

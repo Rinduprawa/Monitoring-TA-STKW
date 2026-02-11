@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\DosenController;
 use App\Http\Controllers\Api\KaprodiController;
 use App\Http\Controllers\Api\ProdiController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\MahasiswaPendaftaranTAController;
+use App\Http\Controllers\Api\KaprodiPendaftaranTAController;
 
 // Test route
 Route::get('/test', function () {
@@ -27,11 +29,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/prodi', [ProdiController::class, 'index']);
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::post('/change-password', [AuthController::class, 'changePassword']);
+
+    // Routes yang bisa diakses mahasiswa & kaprodi
+    Route::get('/berkas-pendaftaran/{id}', [MahasiswaPendaftaranTAController::class, 'serveBerkas']);
+    Route::get('/berkas-pendaftaran/{id}/download', [MahasiswaPendaftaranTAController::class, 'downloadBerkas']);
 });
 
 // Khusus mahasiswa
 Route::middleware(['auth:sanctum', 'role:mahasiswa'])->group(function () {
     Route::get('/mahasiswa/profile', [MahasiswaController::class, 'profile']);
+
+    Route::get('/pendaftaran-ta', [MahasiswaPendaftaranTAController::class, 'index']);
+    Route::post('/pendaftaran-ta', [MahasiswaPendaftaranTAController::class, 'store']);
+    Route::get('/pendaftaran-ta/{id}', [MahasiswaPendaftaranTAController::class, 'show']);
+    Route::post('/pendaftaran-ta/{id}', [MahasiswaPendaftaranTAController::class, 'update']);
+    Route::delete('/pendaftaran-ta/{id}', [MahasiswaPendaftaranTAController::class, 'destroy']);
 });
 
 // Khusus dosen
@@ -42,6 +54,10 @@ Route::middleware(['auth:sanctum', 'role:dosen'])->group(function () {
 // Khusus kaprodi
 Route::middleware(['auth:sanctum', 'role:kaprodi'])->group(function () {
     Route::get('/kaprodi/dashboard', [KaprodiController::class, 'dashboard']);
+
+    Route::get('/kaprodi/pendaftaran-ta', [KaprodiPendaftaranTAController::class, 'index']);
+    Route::get('/kaprodi/pendaftaran-ta/{id}', [KaprodiPendaftaranTAController::class, 'show']);
+    Route::post('/kaprodi/pendaftaran-ta/{id}/validasi', [KaprodiPendaftaranTAController::class, 'validasi']);
 });
 
 // Khusus admin

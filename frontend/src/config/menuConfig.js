@@ -16,7 +16,7 @@ export const menuConfig = {
     },
     {
       items: [
-        { path: '/mahasiswa/pendaftaran', label: 'Pendaftaran Tugas Akhir', icon: '☒' },
+        { path: '/mahasiswa/pendaftaran-ta', label: 'Pendaftaran Tugas Akhir', icon: '☒' },
         { path: '/mahasiswa/proposal', label: 'Pengajuan Proposal', icon: '☒' },
         { path: '/mahasiswa/ujian', label: 'Pengajuan Ujian', icon: '☒' },
       ]
@@ -69,7 +69,7 @@ export const menuConfig = {
     },
     {
       items: [
-        { path: '/kaprodi/validasi-pendaftaran', label: 'Validasi Pendaftaran', icon: '☒' },
+        { path: '/kaprodi/pendaftaran-ta', label: 'Pendaftaran Tugas Akhir', icon: '☒' },
         { path: '/kaprodi/validasi-proposal', label: 'Validasi Proposal', icon: '☒' },
         { path: '/kaprodi/validasi-ujian', label: 'Validasi Ujian', icon: '☒' },
       ]

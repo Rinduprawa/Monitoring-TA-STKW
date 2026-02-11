@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import UserForm from './UserForm';
-import KaprodiForm from './KaprodiForm';
-import UserDetail from './UserDetail';
+import UserForm from './FormUser';
+import KaprodiForm from './FormKaprodi';
+import UserDetail from './DetailUser';
 
 export default function DataPengguna() {
   const [activeTab, setActiveTab] = useState('mahasiswa');
