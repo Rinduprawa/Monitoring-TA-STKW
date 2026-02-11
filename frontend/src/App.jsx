@@ -10,9 +10,12 @@ import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
 import PendaftaranTA from './pages/mahasiswa/PendaftaranTA';
+import PengajuanProposal from './pages/mahasiswa/PengajuanProposal';
 import PendaftaranTAKaprodi from './pages/kaprodi/PendaftaranTA';
 import ValidasiPendaftaran from './pages/kaprodi/ValidasiPendaftaran';
 import FormPendaftaranTA from './pages/mahasiswa/FormPendaftaranTA';
+import FormPengajuanProposal from './pages/mahasiswa/FormPengajuanProposal';
+import DetailPengajuanProposal from './pages/mahasiswa/DetailPengajuanProposal';
 
 function App() {
   return (
@@ -33,6 +36,10 @@ function App() {
               <Route path="/mahasiswa/pendaftaran-ta" element={<PendaftaranTA />} />
               <Route path="/mahasiswa/pendaftaran-ta/create" element={<FormPendaftaranTA />} />
               <Route path="/mahasiswa/pendaftaran-ta/edit/:id" element={<FormPendaftaranTA />} />
+              <Route path="/mahasiswa/pengajuan-proposal" element={<PengajuanProposal />} />
+              <Route path="/mahasiswa/pengajuan-proposal/create" element={<FormPengajuanProposal />} />
+              <Route path="/mahasiswa/pengajuan-proposal/edit/:id" element={<FormPengajuanProposal />} />
+              <Route path="/mahasiswa/pengajuan-proposal/:id" element={<DetailPengajuanProposal />} />
             </Route>
           </Route>
 

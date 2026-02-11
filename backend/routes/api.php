@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\KaprodiController;
 use App\Http\Controllers\Api\ProdiController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\MahasiswaPendaftaranTAController;
+use App\Http\Controllers\Api\MahasiswaPengajuanProposalController;
 use App\Http\Controllers\Api\KaprodiPendaftaranTAController;
 
 // Test route
@@ -33,6 +34,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Routes yang bisa diakses mahasiswa & kaprodi
     Route::get('/berkas-pendaftaran/{id}', [MahasiswaPendaftaranTAController::class, 'serveBerkas']);
     Route::get('/berkas-pendaftaran/{id}/download', [MahasiswaPendaftaranTAController::class, 'downloadBerkas']);
+
+    // Routes untuk preview/download pengajuan proposal (bisa diakses mahasiswa & kaprodi)
+    Route::get('/pengajuan-proposal/{id}/preview', [MahasiswaPengajuanProposalController::class, 'previewProposal']);
+    Route::get('/pengajuan-proposal/{id}/download', [MahasiswaPengajuanProposalController::class, 'downloadProposal']);
 });
 
 // Khusus mahasiswa
@@ -44,6 +49,12 @@ Route::middleware(['auth:sanctum', 'role:mahasiswa'])->group(function () {
     Route::get('/pendaftaran-ta/{id}', [MahasiswaPendaftaranTAController::class, 'show']);
     Route::post('/pendaftaran-ta/{id}', [MahasiswaPendaftaranTAController::class, 'update']);
     Route::delete('/pendaftaran-ta/{id}', [MahasiswaPendaftaranTAController::class, 'destroy']);
+
+    Route::get('/pengajuan-proposal', [MahasiswaPengajuanProposalController::class, 'index']);
+    Route::post('/pengajuan-proposal', [MahasiswaPengajuanProposalController::class, 'store']);
+    Route::get('/pengajuan-proposal/{id}', [MahasiswaPengajuanProposalController::class, 'show']);
+    Route::post('/pengajuan-proposal/{id}', [MahasiswaPengajuanProposalController::class, 'update']);
+    Route::delete('/pengajuan-proposal/{id}', [MahasiswaPengajuanProposalController::class, 'destroy']);
 });
 
 // Khusus dosen
