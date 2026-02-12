@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
                 // Config data (wajib)
             ProdiSeeder::class,
+            SemesterSeeder::class,
             SyaratBimbinganSeeder::class,
             ThresholdNilaiSeeder::class,
 

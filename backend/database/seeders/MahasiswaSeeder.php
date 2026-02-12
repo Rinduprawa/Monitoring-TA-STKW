@@ -43,7 +43,6 @@ class MahasiswaSeeder extends Seeder
         ];
 
         $bentukTa = ['penelitian', 'penciptaan'];
-        $tahapTa = ['pendaftaran', 'proposal', 'tes_tahap_1', 'uji_kelayakan_1', 'tes_tahap_2', 'uji_kelayakan_2', 'pergelaran', 'sidang_skripsi', 'sidang_komprehensif'];
 
         foreach ($mahasiswas as $index => $mhsData) {
             $user = User::create([
@@ -66,7 +65,7 @@ class MahasiswaSeeder extends Seeder
                 'prodi_id' => $prodi->id,
                 'bentuk_ta' => $bentukTa[array_rand($bentukTa)],
                 'judul_ta' => 'Judul TA ' . $mhsData['nama'],
-                'tahap_ta' => $tahapTa[array_rand($tahapTa)],
+                'tahap_ta' => 'pendaftaran',
                 'dospem_1_id' => $dospem1->id,
                 'dospem_2_id' => rand(0, 1) ? $dospem2->id : null,
             ]);

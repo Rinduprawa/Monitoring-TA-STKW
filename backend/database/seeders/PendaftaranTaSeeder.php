@@ -15,7 +15,7 @@ class PendaftaranTaSeeder extends Seeder
     public function run(): void
     {
         $mahasiswas = Mahasiswa::all();
-        
+
         $jenisBerkas = [
             'surat_permohonan',
             'bukti_uang_gedung',
@@ -33,9 +33,9 @@ class PendaftaranTaSeeder extends Seeder
         foreach ($mahasiswas->take(15) as $mhs) {
             $pendaftaran = PendaftaranTa::create([
                 'mahasiswa_id' => $mhs->id,
+                'semester_id' => 2,
                 'status_validasi' => $statusValidasi[array_rand($statusValidasi)],
                 'catatan_kaprodi' => rand(0, 1) ? 'Catatan validasi untuk ' . $mhs->nama : null,
-                'is_active' => true,
             ]);
 
             // Create berkas untuk setiap jenis
