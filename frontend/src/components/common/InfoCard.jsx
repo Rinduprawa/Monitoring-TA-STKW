@@ -1,6 +1,6 @@
-// src/components/mahasiswa/InfoCard.jsx
+// src/components/common/InfoCard.jsx
 
-export default function InfoCard({ mahasiswa }) {
+export default function InfoCard({ mahasiswa, tanggalUjianTerdekat }) {
   return (
     <div className="bg-white border border-gray-300 p-6">
       <div className="flex items-center justify-between mb-4">
@@ -25,22 +25,22 @@ export default function InfoCard({ mahasiswa }) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="font-semibold mb-1">Pembimbing 1</p>
-            <p className="text-sm">{mahasiswa?.dosenPembimbing1?.nama || '-'}</p>
-            <p className="text-xs text-gray-500">{mahasiswa?.dosenPembimbing1?.nip || '-'}</p>
+            <p className="text-sm">{mahasiswa?.dosen_pembimbing1?.nama || '-'}</p>
+            <p className="text-xs text-gray-500">{mahasiswa?.dosen_pembimbing1?.nip || '-'}</p>
           </div>
 
           <div>
             <p className="font-semibold mb-1">Pembimbing 2</p>
-            <p className="text-sm">{mahasiswa?.dosenPembimbing2?.nama || '-'}</p>
-            <p className="text-xs text-gray-500">{mahasiswa?.dosenPembimbing2?.nip || '-'}</p>
+            <p className="text-sm">{mahasiswa?.dosen_pembimbing2?.nama || '-'}</p>
+            <p className="text-xs text-gray-500">{mahasiswa?.dosen_pembimbing2?.nip || '-'}</p>
           </div>
 
           <div>
-            <p className="font-semibold mb-1">Tanggal Proposal</p>
+            <p className="font-semibold mb-1">Jadwal Ujian Terdekat</p>
             <p className="text-sm">
-              {mahasiswa?.tanggal_proposal 
-                ? new Date(mahasiswa.tanggal_proposal).toLocaleDateString('id-ID')
-                : '-'
+              {tanggalUjianTerdekat 
+                ? new Date(tanggalUjianTerdekat).toLocaleDateString('id-ID')
+                : 'Belum dijadwalkan'
               }
             </p>
           </div>

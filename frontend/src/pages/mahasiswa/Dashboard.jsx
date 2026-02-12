@@ -51,7 +51,8 @@ export default function DashboardMahasiswa() {
     status_proposal,
     nilai_proposal,
     threshold_proposal,
-    jadwal_proposal
+    jadwal_proposal,
+    tanggal_ujian_terdekat
   } = data;
 
   // Show full dashboard only when proposal approved & nilai >= threshold
@@ -85,7 +86,10 @@ export default function DashboardMahasiswa() {
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <InfoCard mahasiswa={mahasiswa} />
+            <InfoCard 
+              mahasiswa={mahasiswa} 
+              tanggalUjianTerdekat={tanggal_ujian_terdekat}
+            />
             <RiwayatBimbingan bimbingans={bimbingans} />
           </div>
         </>
