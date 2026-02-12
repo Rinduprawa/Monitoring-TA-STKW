@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\DashboardMahasiswaController;
 
 use App\Http\Controllers\Api\MahasiswaPendaftaranTAController;
 use App\Http\Controllers\Api\MahasiswaPengajuanProposalController;
+use App\Http\Controllers\Api\MahasiswaBerkasTAController;
 
 use App\Http\Controllers\Api\KaprodiPendaftaranTAController;
 use App\Http\Controllers\Api\KaprodiPengajuanProposalController;
@@ -62,6 +63,12 @@ Route::middleware(['auth:sanctum', 'role:mahasiswa'])->group(function () {
     Route::get('/pengajuan-proposal/{id}', [MahasiswaPengajuanProposalController::class, 'show']);
     Route::post('/pengajuan-proposal/{id}', [MahasiswaPengajuanProposalController::class, 'update']);
     Route::delete('/pengajuan-proposal/{id}', [MahasiswaPengajuanProposalController::class, 'destroy']);
+
+    Route::get('/berkas-ta', [MahasiswaBerkasTAController::class, 'index']);
+    Route::post('/berkas-ta', [MahasiswaBerkasTAController::class, 'store']);
+    Route::get('/berkas-ta/{id}', [MahasiswaBerkasTAController::class, 'show']);
+    Route::post('/berkas-ta/{jenisBerkas}', [MahasiswaBerkasTAController::class, 'update']);
+    Route::delete('/berkas-ta/{jenisBerkas}', [MahasiswaBerkasTAController::class, 'destroy']);
 });
 
 // Khusus dosen

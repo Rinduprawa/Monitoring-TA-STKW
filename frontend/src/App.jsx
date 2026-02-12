@@ -17,6 +17,7 @@ import PengajuanProposal from './pages/mahasiswa/PengajuanProposal';
 import FormPendaftaranTA from './pages/mahasiswa/FormPendaftaranTA';
 import FormPengajuanProposal from './pages/mahasiswa/FormPengajuanProposal';
 import DetailPengajuanProposal from './pages/mahasiswa/DetailPengajuanProposal';
+import BerkasTA from './pages/mahasiswa/BerkasTA';
 
 import PendaftaranTAKaprodi from './pages/kaprodi/PendaftaranTA';
 import ValidasiPendaftaran from './pages/kaprodi/ValidasiPendaftaran';
@@ -48,6 +49,7 @@ function App() {
               <Route path="/mahasiswa/pengajuan-proposal/create" element={<FormPengajuanProposal />} />
               <Route path="/mahasiswa/pengajuan-proposal/edit/:id" element={<FormPengajuanProposal />} />
               <Route path="/mahasiswa/pengajuan-proposal/:id" element={<DetailPengajuanProposal />} />
+              <Route path="/mahasiswa/berkas-ta" element={<BerkasTA />} />
             </Route>
           </Route>
 

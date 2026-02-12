@@ -30,7 +30,7 @@ export const menuConfig = {
     {
       items: [
         { path: '/mahasiswa/penilaian', label: 'Penilaian', icon: '☒' },
-        { path: '/mahasiswa/berkas', label: 'Berkas Tugas Akhir', icon: '☒' },
+        { path: '/mahasiswa/berkas-ta', label: 'Berkas Tugas Akhir', icon: '☒' },
       ]
     },
   ],
