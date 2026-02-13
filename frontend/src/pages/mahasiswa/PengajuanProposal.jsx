@@ -9,9 +9,13 @@ export default function PengajuanProposal() {
   const [pengajuans, setPengajuans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [canCreate, setCanCreate] = useState(true);
+  const [eligible, setEligible] = useState(true);
+  const [eligibilityMessage, setEligibilityMessage] = useState(null);
+
 
   useEffect(() => {
     fetchPengajuans();
+    checkEligibility();
   }, []);
 
   const fetchPengajuans = async () => {
@@ -21,12 +25,24 @@ export default function PengajuanProposal() {
       setPengajuans(data);
 
       // Check if ada pengajuan yang sedang diproses
-      const hasPending = data.some(p => p.status === 'diproses' || p.status === 'disetujui');
-      setCanCreate(!hasPending);
+      const hasAnySubmission = data.length > 0;
+      setCanCreate(!hasAnySubmission);
     } catch (error) {
       console.error('Failed to fetch pengajuan:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const checkEligibility = async () => {
+    try {
+      const response = await api.get('/pengajuan-proposal/check-eligibility');
+      if (!response.data.eligible) {
+        setEligible(false);
+        setEligibilityMessage(response.data.message);
+      }
+    } catch (error) {
+      console.error('Eligibility check failed:', error);
     }
   };
 
@@ -70,15 +86,23 @@ export default function PengajuanProposal() {
         <button
           onClick={() => navigate('/mahasiswa/pengajuan-proposal/create')}
           className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-          disabled={!canCreate}
+          disabled={!canCreate || !eligible}
         >
           + Tambah Pengajuan
         </button>
       </div>
 
       {pengajuans.length === 0 ? (
-        <div className="bg-white border border-gray-300 p-8 text-center text-gray-500">
-          Belum ada pengajuan. Klik tombol "Tambah Pengajuan" untuk membuat pengajuan baru.
+        <div >
+          {!eligible ? (
+            <div className="bg-white border border-red-300 p-8 text-center text-red-600">
+              {eligibilityMessage}
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-300 p-8 text-center text-gray-500">
+              Belum ada pengajuan. Klik tombol "Tambah Pengajuan" untuk membuat pengajuan baru.
+            </div>
+          )}
         </div>
       ) : (
         <div className="bg-white border border-gray-300">

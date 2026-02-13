@@ -14,6 +14,7 @@ class PengajuanProposal extends Model
 
     protected $fillable = [
         'mahasiswa_id',
+        'pendaftaran_ta_id',
         'judul_ta',
         'bentuk_ta',
         'file_proposal',

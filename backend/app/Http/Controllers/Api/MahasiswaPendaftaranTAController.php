@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PendaftaranTa;
 use App\Models\BerkasPendaftaran;
 use App\Models\Mahasiswa;
+use App\Models\Semester;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -43,6 +44,32 @@ class MahasiswaPendaftaranTAController extends Controller
         if (!$mahasiswa) {
             return response()->json(['message' => 'Mahasiswa not found'], 404);
         }
+        // Ambil semester aktif
+        $semesterAktif = Semester::where('is_active', true)->first();
+
+        if (!$semesterAktif) {
+            return response()->json(['message' => 'Tidak ada semester aktif'], 400);
+        }
+
+        // Cek apakah sudah punya pendaftaran di semester ini
+        $existing = PendaftaranTa::where('mahasiswa_id', $mahasiswa->id)
+            ->where('semester_id', $semesterAktif->id)
+            ->first();
+
+        if ($existing) {
+            if ($existing->status_validasi === 'menunggu') {
+                return response()->json([
+                    'message' => 'Anda sudah memiliki pendaftaran yang sedang menunggu validasi di semester ini'
+                ], 400);
+            }
+
+            if ($existing->status_validasi === 'valid') {
+                return response()->json([
+                    'message' => 'Anda sudah memiliki pendaftaran yang valid di semester ini'
+                ], 400);
+            }
+        }
+
 
         $request->validate([
             'surat_permohonan' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
@@ -60,8 +87,8 @@ class MahasiswaPendaftaranTAController extends Controller
             // Create pendaftaran
             $pendaftaran = PendaftaranTa::create([
                 'mahasiswa_id' => $mahasiswa->id,
+                'semester_id' => $semesterAktif->id,
                 'status_validasi' => 'menunggu',
-                'is_active' => true,
             ]);
 
             // Upload & create berkas

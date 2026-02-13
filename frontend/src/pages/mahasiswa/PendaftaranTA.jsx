@@ -33,10 +33,17 @@ export default function PendaftaranTA() {
       const response = await api.get('/pendaftaran-ta');
       // response.data.data atau response.data tergantung controller
       const data = response.data.data || response.data;
-        setPendaftarans(data);
-            // Check if ada pendaftaran yang menunggu validasi
-      const hasPending = data.some(p => p.status_validasi === 'menunggu');
-      setCanCreate(!hasPending);
+      setPendaftarans(data);
+      // Check if ada pendaftaran yang menunggu validasi
+      if (data.length === 0) {
+        setCanCreate(true);
+      } else {
+        const latest = data[0]; // karena sudah orderBy desc
+        const blocked = latest.status_validasi === 'menunggu' || 
+                        latest.status_validasi === 'valid';
+
+        setCanCreate(!blocked);
+      }
     } catch (error) {
       console.error('Failed to fetch pendaftaran:', error);
     } finally {
@@ -128,7 +135,18 @@ export default function PendaftaranTA() {
                     </>
                   )}
                   {!canEdit(pendaftaran.status_validasi) && (
-                    <span className="text-sm text-gray-500 italic">Tidak dapat diubah</span>
+                    <span
+                      className={`text-sm italic ${
+                        pendaftaran.status_validasi === 'valid'
+                          ? 'text-green-600'
+                          : pendaftaran.status_validasi === 'tidak_valid'
+                          ? 'text-red-600'
+                          : 'text-gray-500'
+                      }`}
+                    >
+                      {pendaftaran.status_validasi === 'valid' && 'Disetujui'}
+                      {pendaftaran.status_validasi === 'tidak_valid' && 'Ditolak'}
+                    </span>
                   )}
                 </div>
               </div>

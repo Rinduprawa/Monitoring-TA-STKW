@@ -60,6 +60,7 @@ Route::middleware(['auth:sanctum', 'role:mahasiswa'])->group(function () {
 
     Route::get('/pengajuan-proposal', [MahasiswaPengajuanProposalController::class, 'index']);
     Route::post('/pengajuan-proposal', [MahasiswaPengajuanProposalController::class, 'store']);
+    Route::get('/pengajuan-proposal/check-eligibility', [MahasiswaPengajuanProposalController::class, 'checkEligibility']);
     Route::get('/pengajuan-proposal/{id}', [MahasiswaPengajuanProposalController::class, 'show']);
     Route::post('/pengajuan-proposal/{id}', [MahasiswaPengajuanProposalController::class, 'update']);
     Route::delete('/pengajuan-proposal/{id}', [MahasiswaPengajuanProposalController::class, 'destroy']);

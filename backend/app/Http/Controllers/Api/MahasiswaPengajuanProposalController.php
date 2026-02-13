@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\PengajuanProposal;
 use App\Models\Mahasiswa;
+use App\Models\Semester;
+use App\Models\PendaftaranTa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -42,6 +44,27 @@ class MahasiswaPengajuanProposalController extends Controller
             return response()->json(['message' => 'Mahasiswa not found'], 404);
         }
 
+        // Ambil semester aktif
+        $semesterAktif = Semester::where('is_active', true)->first();
+
+        if (!$semesterAktif) {
+            return response()->json([
+                'message' => 'Tidak ada semester aktif'
+            ], 400);
+        }
+
+        // Cari pendaftaran valid di semester aktif
+        $pendaftaran = PendaftaranTa::where('mahasiswa_id', $mahasiswa->id)
+            ->where('semester_id', $semesterAktif->id)
+            ->where('status_validasi', 'valid')
+            ->first();
+
+        if (!$pendaftaran) {
+            return response()->json([
+                'message' => 'Silakan melakukan pendaftaran tugas akhir terlebih dahulu.'
+            ], 400);
+        }
+
         $request->validate([
             'judul_ta' => 'required|string|max:500',
             'bentuk_ta' => 'required|in:penelitian,penciptaan',
@@ -58,6 +81,7 @@ class MahasiswaPengajuanProposalController extends Controller
             // Create pengajuan
             $pengajuan = PengajuanProposal::create([
                 'mahasiswa_id' => $mahasiswa->id,
+                'pendaftaran_ta_id' => $pendaftaran->id,
                 'judul_ta' => $request->judul_ta,
                 'bentuk_ta' => $request->bentuk_ta,
                 'file_proposal' => $path,
@@ -244,4 +268,40 @@ class MahasiswaPengajuanProposalController extends Controller
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
     }
+
+    public function checkEligibility(Request $request)
+    {
+        $user = $request->user();
+        $mahasiswa = Mahasiswa::where('user_id', $user->id)->first();
+
+        if (!$mahasiswa) {
+            return response()->json(['message' => 'Mahasiswa not found'], 404);
+        }
+
+        $semesterAktif = \App\Models\Semester::where('is_active', true)->first();
+
+        if (!$semesterAktif) {
+            return response()->json([
+                'eligible' => false,
+                'message' => 'Tidak ada semester aktif.'
+            ]);
+        }
+
+        $pendaftaran = \App\Models\PendaftaranTa::where('mahasiswa_id', $mahasiswa->id)
+            ->where('semester_id', $semesterAktif->id)
+            ->where('status_validasi', 'valid')
+            ->first();
+
+        if (!$pendaftaran) {
+            return response()->json([
+                'eligible' => false,
+                'message' => 'Silakan melakukan pendaftaran tugas akhir terlebih dahulu.'
+            ]);
+        }
+
+        return response()->json([
+            'eligible' => true
+        ]);
+    }
+
 }

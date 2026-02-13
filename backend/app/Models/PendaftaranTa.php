@@ -14,6 +14,7 @@ class PendaftaranTa extends Model
 
     protected $fillable = [
         'mahasiswa_id',
+        'semester_id',
         'status_validasi',
         'catatan_kaprodi',
         'is_active',
