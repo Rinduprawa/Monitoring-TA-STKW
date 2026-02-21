@@ -23,6 +23,8 @@ import PendaftaranTAKaprodi from './pages/kaprodi/PendaftaranTA';
 import ValidasiPendaftaran from './pages/kaprodi/ValidasiPendaftaran';
 import PengajuanProposalKaprodi from './pages/kaprodi/PengajuanProposal';
 import ValidasiPengajuanProposal from './pages/kaprodi/ValidasiProposal';
+import ManajemenJadwal from './pages/kaprodi/ManajemenJadwal';
+import FormJadwal from './pages/kaprodi/FormJadwal';
 
 function App() {
   return (
@@ -70,6 +72,9 @@ function App() {
               <Route path="/kaprodi/pendaftaran-ta/validasi/:id" element={<ValidasiPendaftaran />} />
               <Route path="/kaprodi/pengajuan-proposal" element={<PengajuanProposalKaprodi />} />
               <Route path="/kaprodi/pengajuan-proposal/validasi/:id" element={<ValidasiPengajuanProposal />} />
+              <Route path="jadwal-ujian" element={<ManajemenJadwal />} />
+              <Route path="jadwal-ujian/create" element={<FormJadwal />} />
+              <Route path="jadwal-ujian/edit/:id" element={<FormJadwal />} />
             </Route>
           </Route>
 

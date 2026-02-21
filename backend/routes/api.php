@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\MahasiswaBerkasTAController;
 
 use App\Http\Controllers\Api\KaprodiPendaftaranTAController;
 use App\Http\Controllers\Api\KaprodiPengajuanProposalController;
+use App\Http\Controllers\Api\KaprodiJadwalUjianController;
 
 
 // Test route
@@ -87,6 +88,15 @@ Route::middleware(['auth:sanctum', 'role:kaprodi'])->group(function () {
     Route::get('/kaprodi/pengajuan-proposal', [KaprodiPengajuanProposalController::class, 'index']);
     Route::get('/kaprodi/pengajuan-proposal/{id}', [KaprodiPengajuanProposalController::class, 'show']);
     Route::post('/kaprodi/pengajuan-proposal/{id}/validasi', [KaprodiPengajuanProposalController::class, 'validasi']);
+
+    Route::get('/jadwal-ujian', [KaprodiJadwalUjianController::class, 'index']);
+    Route::post('/jadwal-ujian', [KaprodiJadwalUjianController::class, 'store']);
+    Route::get('/jadwal-ujian/{id}', [KaprodiJadwalUjianController::class, 'show']);
+    Route::put('/jadwal-ujian/{id}', [KaprodiJadwalUjianController::class, 'update']);
+    Route::delete('/jadwal-ujian/{id}', [KaprodiJadwalUjianController::class, 'destroy']);
+    Route::get('/mahasiswa-eligible', [KaprodiJadwalUjianController::class, 'getMahasiswaEligible']);
+    Route::post('/jadwal-ujian/{id}/assign-penguji', [KaprodiJadwalUjianController::class, 'assignPenguji']);
+    Route::get('/dosen-penguji', [KaprodiJadwalUjianController::class, 'getDosenPenguji']);
 });
 
 // Khusus admin

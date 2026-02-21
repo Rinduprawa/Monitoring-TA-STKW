@@ -76,7 +76,7 @@ export const menuConfig = {
     },
     {
       items: [
-        { path: '/kaprodi/jadwal', label: 'Jadwal Ujian', icon: '☒' },
+        { path: '/kaprodi/jadwal-ujian', label: 'Jadwal Ujian', icon: '☒' },
         { path: '/kaprodi/penugasan', label: 'Penugasan Dosen', icon: '☒' },
       ]
     },
