@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\PendaftaranTa;
 use App\Models\BerkasPendaftaran;
+use App\Models\Kaprodi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,11 +16,23 @@ class KaprodiPendaftaranTAController extends Controller
      */
     public function index(Request $request)
     {
+        $user = $request->user();
+
+        $kaprodi = Kaprodi::where('user_id', $user->id)->first();
+
+        if (!$kaprodi) {
+            return response()->json(['message' => 'Kaprodi not found'], 404);
+        }
+
         $pendaftarans = PendaftaranTa::with([
             'mahasiswa.user',
             'mahasiswa.prodi',
-            'berkasPendaftaran'
+            'berkasPendaftaran',
+            'semester'
         ])
+            ->whereHas('mahasiswa', function ($query) use ($kaprodi) {
+                $query->where('prodi_id', $kaprodi->prodi_id);
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 

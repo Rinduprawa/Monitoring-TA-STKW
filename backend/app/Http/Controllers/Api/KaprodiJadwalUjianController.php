@@ -13,9 +13,12 @@ class KaprodiJadwalUjianController extends Controller
     {
         $jenisUjian = $request->query('jenis_ujian');
 
-        $jadwals = JadwalUjian::with(['mahasiswa'])
-            ->when($jenisUjian, fn($q) => $q->where('jenis_ujian', $jenisUjian))
-            ->orderBy('tanggal_ujian', 'desc')
+        $jadwals = JadwalUjian::with(['mahasiswa.prodi'])
+            ->when($jenisUjian, function ($q) use ($jenisUjian) {
+                $jenisArray = explode(',', $jenisUjian);
+                $q->whereIn('jenis_ujian', $jenisArray); // ← Use whereIn
+            })
+            ->orderBy('tanggal', 'desc')
             ->get();
 
         return response()->json(['data' => $jadwals]);
@@ -26,15 +29,15 @@ class KaprodiJadwalUjianController extends Controller
         $validated = $request->validate([
             'jenis_ujian' => 'required|string',
             'mahasiswa_id' => 'required|exists:mahasiswa,id',
-            'tanggal_ujian' => 'required|date',
+            'tanggal' => 'required|date',
             'jam_mulai' => 'required',
             'jam_selesai' => 'nullable',
         ]);
 
         $jadwal = JadwalUjian::create([
             ...$validated,
-            'hari' => date('l', strtotime($validated['tanggal_ujian'])),
-            'status_jadwal' => 'draft', // default draft
+            'tanggal' => date('Y-m-d', strtotime($validated['tanggal'])),
+            'status_jadwal' => $validated['status_jadwal'] ?? 'draft',
         ]);
 
         return response()->json(['data' => $jadwal], 201);
@@ -42,7 +45,8 @@ class KaprodiJadwalUjianController extends Controller
 
     public function show($id)
     {
-        $jadwal = JadwalUjian::with('mahasiswa')->findOrFail($id);
+        $jadwal = JadwalUjian::with(['mahasiswa.prodi'])->findOrFail($id);
+
         return response()->json(['data' => $jadwal]);
     }
 
@@ -53,14 +57,15 @@ class KaprodiJadwalUjianController extends Controller
         $validated = $request->validate([
             'jenis_ujian' => 'required|string',
             'mahasiswa_id' => 'required|exists:mahasiswa,id',
-            'tanggal_ujian' => 'required|date',
+            'tanggal' => 'required|date',
             'jam_mulai' => 'required',
             'jam_selesai' => 'nullable',
+            'status_jadwal' => 'nullable|in:draft,terjadwal,selesai',
         ]);
 
         $jadwal->update([
             ...$validated,
-            'hari' => date('l', strtotime($validated['tanggal_ujian'])),
+            'tanggal' => date('Y-m-d', strtotime($validated['tanggal'])),
         ]);
 
         return response()->json(['data' => $jadwal]);
@@ -81,6 +86,90 @@ class KaprodiJadwalUjianController extends Controller
         })->get();
 
         return response()->json(['data' => $mahasiswa]);
+    }
+
+    public function getNextUjian($mahasiswaId)
+    {
+        $mahasiswa = Mahasiswa::findOrFail($mahasiswaId);
+
+        if (!$mahasiswa->bentuk_ta) {
+            return response()->json([
+                'data' => [
+                    'next_ujian' => null,
+                    'existing_jenis' => [],
+                    'bentuk_ta' => null
+                ]
+            ]);
+        }
+
+        $existingJadwals = JadwalUjian::where('mahasiswa_id', $mahasiswaId)
+            ->pluck('jenis_ujian')
+            ->toArray();
+
+        $sequence = $mahasiswa->bentuk_ta === 'penelitian'
+            ? ['proposal', 'uji_kelayakan_1', 'uji_kelayakan_2', 'sidang_skripsi']
+            : ['proposal', 'tes_tahap_1', 'tes_tahap_2', 'pergelaran', 'sidang_komprehensif'];
+
+        $nextUjian = null;
+        foreach ($sequence as $ujian) {
+            if (!in_array($ujian, $existingJadwals)) {
+                $nextUjian = $ujian;
+                break;
+            }
+        }
+
+        return response()->json([
+            'data' => [
+                'next_ujian' => $nextUjian,
+                'existing_jenis' => $existingJadwals, // ← Return existing
+                'bentuk_ta' => $mahasiswa->bentuk_ta
+            ]
+        ]);
+    }
+
+    public function checkSequence(Request $request, $mahasiswaId, $jenisUjian)
+    {
+        $mahasiswa = Mahasiswa::findOrFail($mahasiswaId);
+        $excludeCurrent = $request->query('exclude_current'); // Current jenis ujian yang sedang di-edit
+
+        // Get existing jadwals (exclude the one being edited)
+        $existingJadwals = JadwalUjian::where('mahasiswa_id', $mahasiswaId)
+            ->when($excludeCurrent, function ($q) use ($excludeCurrent) {
+                $q->where('jenis_ujian', '!=', $excludeCurrent);
+            })
+            ->pluck('jenis_ujian')
+            ->toArray();
+
+        $sequence = $mahasiswa->bentuk_ta === 'penelitian'
+            ? ['proposal', 'uji_kelayakan_1', 'uji_kelayakan_2', 'sidang_skripsi']
+            : ['proposal', 'tes_tahap_1', 'tes_tahap_2', 'pergelaran', 'sidang_komprehensif'];
+
+        $selectedIndex = array_search($jenisUjian, $sequence);
+
+        if ($selectedIndex === false) {
+            return response()->json([
+                'is_valid' => false,
+                'message' => 'Jenis ujian tidak sesuai dengan bentuk TA mahasiswa',
+            ]);
+        }
+
+        // Find missing stages BEFORE selected jenis ujian
+        $missingStages = [];
+        for ($i = 0; $i < $selectedIndex; $i++) {
+            if (!in_array($sequence[$i], $existingJadwals)) {
+                $missingStages[] = str_replace('_', ' ', ucwords($sequence[$i], '_'));
+            }
+        }
+
+        $isValid = count($missingStages) === 0;
+        $message = $isValid
+            ? ''
+            : 'Mahasiswa belum memiliki jadwal: ' . implode(', ', $missingStages);
+
+        return response()->json([
+            'is_valid' => $isValid,
+            'message' => $message,
+        ]);
     }
 
     public function assignPenguji(Request $request, $id)

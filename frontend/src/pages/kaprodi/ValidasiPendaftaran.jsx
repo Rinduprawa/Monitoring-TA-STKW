@@ -8,7 +8,8 @@ import FilePreviewModal from '../../components/modal/FilePreview';
 export default function ValidasiPendaftaran() {
   const navigate = useNavigate();
   const { id } = useParams();
-  
+
+  const [errors, setErrors] = useState({});
   const [pendaftaran, setPendaftaran] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -82,8 +83,21 @@ export default function ValidasiPendaftaran() {
   const allValid = Object.values(berkasStatus).every(b => b.is_valid);
 
   const handleSubmit = async (status) => {
+    const newErrors = {};
+
+    Object.entries(berkasStatus).forEach(([berkasId, data]) => {
+      if (!data.is_valid && (!data.catatan || data.catatan.trim() === '')) {
+        newErrors[berkasId] = 'Catatan wajib diisi jika berkas tidak valid';
+      }
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     setSubmitting(true);
-    
+
     const berkasArray = Object.entries(berkasStatus).map(([id, data]) => ({
       id: parseInt(id),
       is_valid: data.is_valid,
@@ -176,10 +190,18 @@ export default function ValidasiPendaftaran() {
                     value={berkasStatus[berkas.id]?.catatan || ''}
                     onChange={(e) => handleCatatanChange(berkas.id, e.target.value)}
                     placeholder="Tambah Catatan"
-                    className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    className={`w-full px-3 py-2 border ${
+                      errors[berkas.id] ? 'border-red-500' : 'border-gray-300'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none`}
                     rows="2"
                     disabled={isReadOnly}
                   />
+
+                  {errors[berkas.id] && (
+                    <p className="text-red-600 text-sm mt-1">
+                      {errors[berkas.id]}
+                    </p>
+                  )}
                 </td>
               </tr>
             ))}

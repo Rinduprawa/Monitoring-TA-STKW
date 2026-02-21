@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PengajuanProposal;
+use App\Models\Kaprodi;
 use Illuminate\Http\Request;
 
 class KaprodiPengajuanProposalController extends Controller
@@ -11,9 +12,20 @@ class KaprodiPengajuanProposalController extends Controller
     /**
      * Get list semua pengajuan proposal mahasiswa
      */
-    public function index()
+    public function index(Request $request)
     {
+        $user = $request->user();
+
+        $kaprodi = Kaprodi::where('user_id', $user->id)->first();
+
+        if (!$kaprodi) {
+            return response()->json(['message' => 'Kaprodi not found'], 404);
+        }
+
         $pengajuans = PengajuanProposal::with('mahasiswa.user')
+            ->whereHas('mahasiswa', function ($query) use ($kaprodi) {
+                $query->where('prodi_id', $kaprodi->prodi_id);
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 

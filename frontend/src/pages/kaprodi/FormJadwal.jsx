@@ -10,30 +10,42 @@ export default function FormJadwal() {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
-
+  
   const [formData, setFormData] = useState({
-    jenis_ujian: '',
     mahasiswa_id: '',
-    tanggal_ujian: '',
+    jenis_ujian: '',
+    tanggal: '',
     jam_mulai: '',
     jam_selesai: '',
-    penguji: '', // dummy text field
   });
-
+  
   const [mahasiswaOptions, setMahasiswaOptions] = useState([]);
+  const [jenisUjianOptions, setJenisUjianOptions] = useState([]);
+  const [defaultJenisUjian, setDefaultJenisUjian] = useState('');
+  const [warning, setWarning] = useState('');
+  const [hasPenugasan ] = useState(false); // Always false for now
+  // const [hasPenugasan, setHasPenugasan] = useState(false); 
+  const [initialJenisUjian, setInitialJenisUjian] = useState('');
+  const [existingJenisUjian, setExistingJenisUjian] = useState([]); 
+  // const [existingJenisUjian, setExistingJenisUjian] = useState([]); 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const jenisUjianOptions = [
-    { value: 'proposal', label: 'Proposal' },
-    { value: 'uji_kelayakan_1', label: 'Uji Kelayakan 1' },
-    { value: 'uji_kelayakan_2', label: 'Uji Kelayakan 2' },
-    { value: 'tes_tahap_1', label: 'Tes Tahap 1' },
-    { value: 'tes_tahap_2', label: 'Tes Tahap 2' },
-    { value: 'pergelaran', label: 'Pergelaran' },
-    { value: 'sidang_skripsi', label: 'Sidang Skripsi' },
-    { value: 'sidang_komprehensif', label: 'Sidang Komprehensif' },
-  ];
+  const allJenisUjian = {
+    penelitian: [
+      { value: 'proposal', label: 'Proposal' },
+      { value: 'uji_kelayakan_1', label: 'Uji Kelayakan 1' },
+      { value: 'uji_kelayakan_2', label: 'Uji Kelayakan 2' },
+      { value: 'sidang_skripsi', label: 'Sidang Skripsi' },
+    ],
+    penciptaan: [
+      { value: 'proposal', label: 'Proposal' },
+      { value: 'tes_tahap_1', label: 'Tes Tahap 1' },
+      { value: 'tes_tahap_2', label: 'Tes Tahap 2' },
+      { value: 'pergelaran', label: 'Pergelaran' },
+      { value: 'sidang_komprehensif', label: 'Sidang Komprehensif' },
+    ]
+  };
 
   useEffect(() => {
     fetchMahasiswaOptions();
@@ -44,10 +56,11 @@ export default function FormJadwal() {
 
   const fetchMahasiswaOptions = async () => {
     try {
-      const response = await api.get('/kaprodi/mahasiswa-eligible'); // mahasiswa dengan proposal disetujui
+      const response = await api.get('/kaprodi/mahasiswa-eligible');
       const options = response.data.data.map(mhs => ({
         value: mhs.id,
-        label: `${mhs.nama} - ${mhs.nim}`
+        label: `${mhs.nama} - ${mhs.nim}`,
+        bentuk_ta: mhs.bentuk_ta
       }));
       setMahasiswaOptions(options);
     } catch (error) {
@@ -59,18 +72,122 @@ export default function FormJadwal() {
     try {
       const response = await api.get(`/kaprodi/jadwal-ujian/${id}`);
       const jadwal = response.data.data;
+      
       setFormData({
+        mahasiswa_id: String(jadwal.mahasiswa_id),
         jenis_ujian: jadwal.jenis_ujian,
-        mahasiswa_id: jadwal.mahasiswa_id,
-        tanggal_ujian: jadwal.tanggal_ujian,
+        tanggal: jadwal.tanggal.split('T')[0], 
         jam_mulai: jadwal.jam_mulai,
         jam_selesai: jadwal.jam_selesai,
-        penguji: jadwal.penguji?.map(p => p.nama).join(', ') || '',
       });
+      
+      setInitialJenisUjian(jadwal.jenis_ujian); // ← Store initial value
+      
+      if (jadwal.mahasiswa?.bentuk_ta) {
+        const allOptions = allJenisUjian[jadwal.mahasiswa.bentuk_ta] || [];
+        
+        // Fetch existing jenis ujian for this mahasiswa
+        try {
+          const nextResponse = await api.get(`/kaprodi/jadwal-ujian/next-ujian/${jadwal.mahasiswa_id}`);
+          const { next_ujian, existing_jenis } = nextResponse.data.data;
+          
+          setDefaultJenisUjian(next_ujian || jadwal.jenis_ujian);
+          setExistingJenisUjian(existing_jenis || []);
+          
+          // Apply disable logic: disable existing jenis EXCEPT the one being edited
+          const optionsWithDisabled = allOptions.map(opt => ({
+            ...opt,
+            disabled: existing_jenis?.includes(opt.value) && opt.value !== jadwal.jenis_ujian
+          }));
+          
+          setJenisUjianOptions(optionsWithDisabled);
+        } catch (err) {
+          setDefaultJenisUjian(jadwal.jenis_ujian);
+          setJenisUjianOptions(allOptions);
+        }
+      }
     } catch (error) {
       console.error('Failed to fetch jadwal:', error);
       alert('Gagal memuat data jadwal');
       navigate('/kaprodi/jadwal-ujian');
+    }
+  };
+
+const handleMahasiswaChange = async (e, preselectedJenis = null) => {
+  const mahasiswaId = e.target.value;
+  setFormData({ ...formData, mahasiswa_id: mahasiswaId, jenis_ujian: preselectedJenis || '' });
+  setWarning('');
+  setDefaultJenisUjian('');
+  setExistingJenisUjian([]); // ← Reset
+
+  if (!mahasiswaId) {
+    setJenisUjianOptions([]);
+    return;
+  }
+
+  const mhs = mahasiswaOptions.find(m => m.value === parseInt(mahasiswaId));
+  if (!mhs || !mhs.bentuk_ta) {
+    alert('Mahasiswa belum memiliki bentuk TA');
+    return;
+  }
+
+  try {
+    const response = await api.get(`/kaprodi/jadwal-ujian/next-ujian/${mahasiswaId}`);
+    const { next_ujian, existing_jenis } = response.data.data; // ← Get existing
+
+    // Set options based on bentuk_ta
+    const allOptions = allJenisUjian[mhs.bentuk_ta] || [];
+    
+    // Mark existing as disabled
+    // In CREATE mode: disable all existing jenis
+    // In EDIT mode: disable existing jenis EXCEPT the current one being edited
+    const optionsWithDisabled = allOptions.map(opt => ({
+      ...opt,
+      disabled: existing_jenis?.includes(opt.value) && (!isEdit || opt.value !== initialJenisUjian)
+    }));
+    
+    setJenisUjianOptions(optionsWithDisabled);
+    setExistingJenisUjian(existing_jenis || []); // ← Store existing
+
+    if (next_ujian && !preselectedJenis) {
+      setDefaultJenisUjian(next_ujian);
+      setFormData(prev => ({ ...prev, jenis_ujian: next_ujian }));
+    }
+
+  } catch (error) {
+    console.error('Failed to get next ujian:', error);
+  }
+};
+
+  const handleJenisUjianChange = async (e) => {
+    const jenisUjian = e.target.value;
+    setFormData({ ...formData, jenis_ujian: jenisUjian });
+    setWarning('');
+
+    if (!formData.mahasiswa_id || !jenisUjian) return;
+
+    // Only check if different from initial (for edit mode)
+    if (isEdit && jenisUjian === initialJenisUjian) {
+      return; // No warning for same value
+    }
+
+    try {
+      const response = await api.get(
+        `/kaprodi/jadwal-ujian/check-sequence/${formData.mahasiswa_id}/${jenisUjian}`,
+        {
+          params: { 
+            exclude_current: isEdit ? initialJenisUjian : null
+          }
+        }
+      );
+      
+      const { is_valid, message } = response.data;
+
+      if (!is_valid) {
+        setWarning(message);
+      }
+    } catch (error) {
+      console.error('Failed to check sequence:', error);
     }
   };
 
@@ -81,6 +198,16 @@ export default function FormJadwal() {
     }
   };
 
+  const isJenisChanged = isEdit 
+    ? formData.jenis_ujian !== initialJenisUjian 
+    : formData.jenis_ujian !== defaultJenisUjian;
+
+  const isDraft = !hasPenugasan || (warning !== '');  const buttonText = loading 
+    ? 'Menyimpan...' 
+    : isDraft 
+    ? 'Simpan Draft' 
+    : 'Tambah Jadwal';
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -88,12 +215,12 @@ export default function FormJadwal() {
 
     try {
       const payload = {
-        jenis_ujian: formData.jenis_ujian,
         mahasiswa_id: formData.mahasiswa_id,
-        tanggal_ujian: formData.tanggal_ujian,
+        jenis_ujian: formData.jenis_ujian,
+        tanggal: formData.tanggal,
         jam_mulai: formData.jam_mulai,
         jam_selesai: formData.jam_selesai,
-        // penguji skip dulu (dummy)
+        status_jadwal: isDraft ? 'draft' : 'terjadwal',
       };
 
       if (isEdit) {
@@ -101,7 +228,7 @@ export default function FormJadwal() {
         alert('Jadwal berhasil diperbarui');
       } else {
         await api.post('/kaprodi/jadwal-ujian', payload);
-        alert('Jadwal berhasil ditambahkan');
+        alert(`Jadwal berhasil disimpan sebagai ${isDraft ? 'draft' : 'jadwal'}`);
       }
 
       navigate('/kaprodi/jadwal-ujian');
@@ -120,62 +247,91 @@ export default function FormJadwal() {
   return (
     <div className="p-8">
       <h1 className="text-2xl font-semibold mb-6">
-        Formulir Jadwal Ujian Tugas Akhir
+        {isEdit ? 'Edit' : 'Formulir'} Jadwal Ujian Tugas Akhir
       </h1>
 
       <form onSubmit={handleSubmit} className="bg-white border border-gray-300 p-6 max-w-2xl">
-        <FormSelect
-          label="Jenis Ujian"
-          name="jenis_ujian"
-          value={formData.jenis_ujian}
-          onChange={handleChange}
-          options={jenisUjianOptions}
-          placeholder="Pilih jenis ujian TA"
-          required
-          error={errors.jenis_ujian?.[0]}
-        />
-
+        {/* 1. Mahasiswa FIRST */}
         <FormSelect
           label="Mahasiswa"
           name="mahasiswa_id"
           value={formData.mahasiswa_id}
-          onChange={handleChange}
+          onChange={handleMahasiswaChange}
           options={mahasiswaOptions}
           placeholder="Pilih mahasiswa"
           required
           error={errors.mahasiswa_id?.[0]}
         />
 
-        <FormInput
-          label="Dosen Penguji"
-          name="penguji"
-          value={formData.penguji}
-          onChange={handleChange}
-          placeholder="Belum ada dosen penguji (dummy field)"
-          disabled
+        {/* 2. Jenis Ujian SECOND */}
+        <FormSelect
+          label="Jenis Ujian"
+          name="jenis_ujian"
+          value={formData.jenis_ujian}
+          onChange={handleJenisUjianChange}
+          options={jenisUjianOptions}
+          placeholder="Pilih jenis ujian TA"
+          required
+          disabled={!formData.mahasiswa_id}
+          error={errors.jenis_ujian?.[0]}
         />
 
+        {/* Warning Box */}
+        {warning && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-300 rounded">
+            <p className="text-sm text-yellow-800">
+              <span className="font-semibold">⚠️ Peringatan:</span> {warning}
+            </p>
+          </div>
+        )}
+
+        {/* Info: Why Draft */}
+        {isDraft && formData.jenis_ujian && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-300 rounded">
+            <p className="text-sm text-blue-800">
+              <span className="font-semibold">ℹ️ Info:</span> Jadwal akan disimpan sebagai <strong>draft</strong> karena:
+            </p>
+            <ul className="text-sm text-blue-700 mt-1 ml-4 list-disc">
+              {!hasPenugasan && <li>Penugasan dosen belum dilakukan</li>}
+              {warning && <li>Jenis ujian tidak sesuai urutan (melewati tahap sebelumnya)</li>}
+            </ul>
+          </div>
+        )}
+        
+        {/* Tanggal */}
         <FormInput
           label="Tanggal"
-          name="tanggal_ujian"
+          name="tanggal"
           type="date"
-          value={formData.tanggal_ujian}
+          value={formData.tanggal}
           onChange={handleChange}
           required
-          error={errors.tanggal_ujian?.[0]}
+          error={errors.tanggal?.[0]}
         />
 
-        <FormInput
-          label="Jam"
-          name="jam_mulai"
-          type="time"
-          value={formData.jam_mulai}
-          onChange={handleChange}
-          placeholder="Jam pelaksanaan"
-          required
-          error={errors.jam_mulai?.[0]}
-        />
+        {/* Jam */}
+        <div className="grid grid-cols-2 gap-4">
+          <FormInput
+            label="Jam Mulai"
+            name="jam_mulai"
+            type="time"
+            value={formData.jam_mulai}
+            onChange={handleChange}
+            required
+            error={errors.jam_mulai?.[0]}
+          />
 
+          <FormInput
+            label="Jam Selesai"
+            name="jam_selesai"
+            type="time"
+            value={formData.jam_selesai}
+            onChange={handleChange}
+            error={errors.jam_selesai?.[0]}
+          />
+        </div>
+
+        {/* Buttons */}
         <div className="flex justify-end gap-3 mt-6">
           <button
             type="button"
@@ -187,10 +343,14 @@ export default function FormJadwal() {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400"
+            className={`px-6 py-2 text-white ${
+              isDraft 
+                ? 'bg-yellow-600 hover:bg-yellow-700' 
+                : 'bg-blue-600 hover:bg-blue-700'
+            } disabled:bg-gray-400`}
             disabled={loading}
           >
-            {loading ? 'Menyimpan...' : 'Tambahkan'}
+            {buttonText}
           </button>
         </div>
       </form>

@@ -30,6 +30,11 @@ class PendaftaranTa extends Model
         return $this->belongsTo(Mahasiswa::class);
     }
 
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
+    }
+
     public function berkasPendaftaran()
     {
         return $this->hasMany(BerkasPendaftaran::class);

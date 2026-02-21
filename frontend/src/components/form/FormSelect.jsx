@@ -28,8 +28,12 @@ export default function FormSelect({
       >
         <option value="">{placeholder}</option>
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
+          <option 
+            key={option.value} 
+            value={option.value}
+            disabled={option.disabled}
+          >
+            {option.label} {option.disabled ? '(Sudah ada)' : ''}
           </option>
         ))}
       </select>

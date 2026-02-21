@@ -89,14 +89,16 @@ Route::middleware(['auth:sanctum', 'role:kaprodi'])->group(function () {
     Route::get('/kaprodi/pengajuan-proposal/{id}', [KaprodiPengajuanProposalController::class, 'show']);
     Route::post('/kaprodi/pengajuan-proposal/{id}/validasi', [KaprodiPengajuanProposalController::class, 'validasi']);
 
-    Route::get('/jadwal-ujian', [KaprodiJadwalUjianController::class, 'index']);
-    Route::post('/jadwal-ujian', [KaprodiJadwalUjianController::class, 'store']);
-    Route::get('/jadwal-ujian/{id}', [KaprodiJadwalUjianController::class, 'show']);
-    Route::put('/jadwal-ujian/{id}', [KaprodiJadwalUjianController::class, 'update']);
-    Route::delete('/jadwal-ujian/{id}', [KaprodiJadwalUjianController::class, 'destroy']);
-    Route::get('/mahasiswa-eligible', [KaprodiJadwalUjianController::class, 'getMahasiswaEligible']);
-    Route::post('/jadwal-ujian/{id}/assign-penguji', [KaprodiJadwalUjianController::class, 'assignPenguji']);
-    Route::get('/dosen-penguji', [KaprodiJadwalUjianController::class, 'getDosenPenguji']);
+    Route::get('/kaprodi/jadwal-ujian', [KaprodiJadwalUjianController::class, 'index']);
+    Route::post('/kaprodi/jadwal-ujian', [KaprodiJadwalUjianController::class, 'store']);
+    Route::get('/kaprodi/jadwal-ujian/{id}', [KaprodiJadwalUjianController::class, 'show']);
+    Route::put('/kaprodi/jadwal-ujian/{id}', [KaprodiJadwalUjianController::class, 'update']);
+    Route::delete('/kaprodi/jadwal-ujian/{id}', [KaprodiJadwalUjianController::class, 'destroy']);
+    Route::get('/kaprodi/mahasiswa-eligible', [KaprodiJadwalUjianController::class, 'getMahasiswaEligible']);
+    Route::get('/kaprodi/jadwal-ujian/next-ujian/{mahasiswaId}', [KaprodiJadwalUjianController::class, 'getNextUjian']);
+    Route::get('/kaprodi/jadwal-ujian/check-sequence/{mahasiswaId}/{jenisUjian}', [KaprodiJadwalUjianController::class, 'checkSequence']);
+    Route::post('/kaprodi/jadwal-ujian/{id}/assign-penguji', [KaprodiJadwalUjianController::class, 'assignPenguji']);
+    Route::get('/kaprodi/dosen-penguji', [KaprodiJadwalUjianController::class, 'getDosenPenguji']);
 });
 
 // Khusus admin
