@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\JadwalUjian;
 use App\Models\Mahasiswa;
+use App\Models\PengajuanProposal;
 use Illuminate\Http\Request;
 
 class KaprodiJadwalUjianController extends Controller
@@ -16,10 +17,24 @@ class KaprodiJadwalUjianController extends Controller
         $jadwals = JadwalUjian::with(['mahasiswa.prodi'])
             ->when($jenisUjian, function ($q) use ($jenisUjian) {
                 $jenisArray = explode(',', $jenisUjian);
-                $q->whereIn('jenis_ujian', $jenisArray); // ← Use whereIn
+                $q->whereIn('jenis_ujian', $jenisArray);
             })
             ->orderBy('tanggal', 'desc')
             ->get();
+
+        // Add penugasan count for each jadwal
+        $jadwals->map(function ($jadwal) {
+            $penugasan = \App\Models\PenugasanDosen::with('dosen')
+                ->where('mahasiswa_id', $jadwal->mahasiswa_id)
+                ->where('jenis_ujian', $jadwal->jenis_ujian)
+                ->whereIn('jenis_penugasan', ['penguji_struktural', 'penguji_ahli', 'penguji_pembimbing', 'penguji_stakeholder'])
+                ->get();
+
+            $jadwal->penguji = $penugasan;
+            $jadwal->penguji_count = $penugasan->count();
+
+            return $jadwal;
+        });
 
         return response()->json(['data' => $jadwals]);
     }
@@ -47,7 +62,14 @@ class KaprodiJadwalUjianController extends Controller
     {
         $jadwal = JadwalUjian::with(['mahasiswa.prodi'])->findOrFail($id);
 
-        return response()->json(['data' => $jadwal]);
+        $proposal = PengajuanProposal::where('mahasiswa_id', $jadwal->mahasiswa_id)
+            ->where('status', 'disetujui')
+            ->first();
+
+        return response()->json([
+            'data' => $jadwal,
+            'proposal' => $proposal
+        ]);
     }
 
     public function update(Request $request, $id)

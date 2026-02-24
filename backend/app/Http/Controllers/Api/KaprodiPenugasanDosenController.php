@@ -425,4 +425,28 @@ class KaprodiPenugasanDosenController extends Controller
 
         return response()->json(['data' => $dosen]);
     }
+
+    /**
+     * Get mahasiswa by ujian
+     */
+    public function getByMahasiswaUjian(Request $request)
+    {
+        $mahasiswaId = $request->query('mahasiswa_id');
+        $jenisUjian = $request->query('jenis_ujian');
+
+        $penugasan = PenugasanDosen::with('dosen')
+            ->where('mahasiswa_id', $mahasiswaId)
+            ->where('jenis_ujian', $jenisUjian)
+            ->whereIn('jenis_penugasan', [
+                'penguji_struktural',
+                'penguji_ahli',
+                'penguji_pembimbing',
+                'penguji_stakeholder'
+            ])
+            ->whereNull('deleted_at')
+            ->get();
+
+        return response()->json(['data' => $penugasan]);
+    }
+
 }

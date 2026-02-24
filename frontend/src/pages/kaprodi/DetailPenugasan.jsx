@@ -101,7 +101,7 @@ export default function DetailPenugasan() {
               <p className="text-sm text-gray-600">NIM</p>
               <p className="font-medium">{penugasan.mahasiswa.nim}</p>
             </div>
-            <div className="col-span-2">
+            <div>
               <p className="text-sm text-gray-600">Judul TA</p>
               <p className="font-medium">{proposal?.judul_ta || penugasan.mahasiswa.judul_ta || '-'}</p>
             </div>

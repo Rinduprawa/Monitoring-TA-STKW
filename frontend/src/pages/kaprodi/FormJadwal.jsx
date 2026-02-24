@@ -19,17 +19,18 @@ export default function FormJadwal() {
     jam_selesai: '',
   });
   
-  const [mahasiswaOptions, setMahasiswaOptions] = useState([]);
-  const [jenisUjianOptions, setJenisUjianOptions] = useState([]);
-  const [defaultJenisUjian, setDefaultJenisUjian] = useState('');
-  const [warning, setWarning] = useState('');
   const [hasPenugasan ] = useState(false); // Always false for now
   // const [hasPenugasan, setHasPenugasan] = useState(false); 
   const [initialJenisUjian, setInitialJenisUjian] = useState('');
-  const [existingJenisUjian, setExistingJenisUjian] = useState([]); 
-  // const [existingJenisUjian, setExistingJenisUjian] = useState([]); 
+
+  const [mahasiswaOptions, setMahasiswaOptions] = useState([]);
+  const [jenisUjianOptions, setJenisUjianOptions] = useState([]);
+  const [existingJenisUjian, setExistingJenisUjian] = useState([]);
+  const [defaultJenisUjian, setDefaultJenisUjian] = useState('');
+  const [penugasanInfo, setPenugasanInfo] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [warning, setWarning] = useState('');
 
   const allJenisUjian = {
     penelitian: [
@@ -53,6 +54,43 @@ export default function FormJadwal() {
       fetchJadwal();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (formData.mahasiswa_id && formData.jenis_ujian) {
+      fetchPenugasanInfo();
+    } else {
+      setPenugasanInfo([]);
+    }
+  }, [formData.mahasiswa_id, formData.jenis_ujian]);
+
+  const fetchPenugasanInfo = async () => {
+    try {
+      const response = await api.get('/kaprodi/penugasan-dosen/by-mahasiswa-ujian', {
+        params: {
+          mahasiswa_id: formData.mahasiswa_id,
+          jenis_ujian: formData.jenis_ujian
+        }
+      });
+      setPenugasanInfo(response.data.data);
+    } catch (error) {
+      console.error('Failed to fetch penugasan:', error);
+      setPenugasanInfo([]);
+    }
+  };
+
+  const getJenisLabel = (jenis) => {
+    const labels = {
+      'penguji_struktural': 'Penguji Struktural',
+      'penguji_ahli': 'Penguji Ahli',
+      'penguji_pembimbing': 'Penguji Pembimbing',
+      'penguji_stakeholder': 'Penguji Stakeholder',
+    };
+    return labels[jenis] || jenis;
+  };
+
+  const allPengujiJenis = ['penguji_struktural', 'penguji_ahli', 'penguji_pembimbing', 'penguji_stakeholder'];
+  const assignedPenguji = penugasanInfo.map(p => p.jenis_penugasan);
+  const missingPenguji = allPengujiJenis.filter(j => !assignedPenguji.includes(j));
 
   const fetchMahasiswaOptions = async () => {
     try {
@@ -113,51 +151,51 @@ export default function FormJadwal() {
     }
   };
 
-const handleMahasiswaChange = async (e, preselectedJenis = null) => {
-  const mahasiswaId = e.target.value;
-  setFormData({ ...formData, mahasiswa_id: mahasiswaId, jenis_ujian: preselectedJenis || '' });
-  setWarning('');
-  setDefaultJenisUjian('');
-  setExistingJenisUjian([]); // ← Reset
+  const handleMahasiswaChange = async (e, preselectedJenis = null) => {
+    const mahasiswaId = e.target.value;
+    setFormData({ ...formData, mahasiswa_id: mahasiswaId, jenis_ujian: preselectedJenis || '' });
+    setWarning('');
+    setDefaultJenisUjian('');
+    setExistingJenisUjian([]); // ← Reset
 
-  if (!mahasiswaId) {
-    setJenisUjianOptions([]);
-    return;
-  }
-
-  const mhs = mahasiswaOptions.find(m => m.value === parseInt(mahasiswaId));
-  if (!mhs || !mhs.bentuk_ta) {
-    alert('Mahasiswa belum memiliki bentuk TA');
-    return;
-  }
-
-  try {
-    const response = await api.get(`/kaprodi/jadwal-ujian/next-ujian/${mahasiswaId}`);
-    const { next_ujian, existing_jenis } = response.data.data; // ← Get existing
-
-    // Set options based on bentuk_ta
-    const allOptions = allJenisUjian[mhs.bentuk_ta] || [];
-    
-    // Mark existing as disabled
-    // In CREATE mode: disable all existing jenis
-    // In EDIT mode: disable existing jenis EXCEPT the current one being edited
-    const optionsWithDisabled = allOptions.map(opt => ({
-      ...opt,
-      disabled: existing_jenis?.includes(opt.value) && (!isEdit || opt.value !== initialJenisUjian)
-    }));
-    
-    setJenisUjianOptions(optionsWithDisabled);
-    setExistingJenisUjian(existing_jenis || []); // ← Store existing
-
-    if (next_ujian && !preselectedJenis) {
-      setDefaultJenisUjian(next_ujian);
-      setFormData(prev => ({ ...prev, jenis_ujian: next_ujian }));
+    if (!mahasiswaId) {
+      setJenisUjianOptions([]);
+      return;
     }
 
-  } catch (error) {
-    console.error('Failed to get next ujian:', error);
-  }
-};
+    const mhs = mahasiswaOptions.find(m => m.value === parseInt(mahasiswaId));
+    if (!mhs || !mhs.bentuk_ta) {
+      alert('Mahasiswa belum memiliki bentuk TA');
+      return;
+    }
+
+    try {
+      const response = await api.get(`/kaprodi/jadwal-ujian/next-ujian/${mahasiswaId}`);
+      const { next_ujian, existing_jenis } = response.data.data; // ← Get existing
+
+      // Set options based on bentuk_ta
+      const allOptions = allJenisUjian[mhs.bentuk_ta] || [];
+      
+      // Mark existing as disabled
+      // In CREATE mode: disable all existing jenis
+      // In EDIT mode: disable existing jenis EXCEPT the current one being edited
+      const optionsWithDisabled = allOptions.map(opt => ({
+        ...opt,
+        disabled: existing_jenis?.includes(opt.value) && (!isEdit || opt.value !== initialJenisUjian)
+      }));
+      
+      setJenisUjianOptions(optionsWithDisabled);
+      setExistingJenisUjian(existing_jenis || []); // ← Store existing
+
+      if (next_ujian && !preselectedJenis) {
+        setDefaultJenisUjian(next_ujian);
+        setFormData(prev => ({ ...prev, jenis_ujian: next_ujian }));
+      }
+
+    } catch (error) {
+      console.error('Failed to get next ujian:', error);
+    }
+  };
 
   const handleJenisUjianChange = async (e) => {
     const jenisUjian = e.target.value;
@@ -198,9 +236,9 @@ const handleMahasiswaChange = async (e, preselectedJenis = null) => {
     }
   };
 
-  const isJenisChanged = isEdit 
-    ? formData.jenis_ujian !== initialJenisUjian 
-    : formData.jenis_ujian !== defaultJenisUjian;
+  // const isJenisChanged = isEdit 
+  //   ? formData.jenis_ujian !== initialJenisUjian 
+  //   : formData.jenis_ujian !== defaultJenisUjian;
 
   const isDraft = !hasPenugasan || (warning !== '');  const buttonText = loading 
     ? 'Menyimpan...' 
@@ -276,25 +314,63 @@ const handleMahasiswaChange = async (e, preselectedJenis = null) => {
           error={errors.jenis_ujian?.[0]}
         />
 
+        {/* ✅ NEW: Penugasan Info */}
+        {formData.mahasiswa_id && formData.jenis_ujian && (
+          <div className="mb-6 p-4 bg-gray-50 border border-gray-300 rounded">
+            <h3 className="font-semibold mb-3 text-gray-800">ℹ️ Informasi Penugasan</h3>
+            
+            {penugasanInfo.length > 0 ? (
+              <div className="space-y-2">
+                {allPengujiJenis.map(jenis => {
+                  const penugasan = penugasanInfo.find(p => p.jenis_penugasan === jenis);
+                  return (
+                    <div key={jenis} className="flex items-center gap-2 text-sm">
+                      {penugasan ? (
+                        <>
+                          <span className="text-green-600">✓</span>
+                          <span className="font-medium">{getJenisLabel(jenis)}:</span>
+                          <span className="text-gray-700">{penugasan.dosen?.nama}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-yellow-600">⚠️</span>
+                          <span className="font-medium text-gray-500">{getJenisLabel(jenis)}:</span>
+                          <span className="text-gray-400">Belum ada</span>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">Belum ada penugasan dosen untuk ujian ini</p>
+            )}
+
+            {missingPenguji.length > 0 && (
+              <div className="mt-3 p-2 bg-yellow-50 border border-yellow-300 rounded">
+                <p className="text-sm text-yellow-800">
+                  <span className="font-semibold">Status:</span> DRAFT 
+                  <span className="ml-1">({missingPenguji.length} penguji belum ditugaskan)</span>
+                </p>
+              </div>
+            )}
+            
+            {missingPenguji.length === 0 && penugasanInfo.length === 4 && (
+              <div className="mt-3 p-2 bg-green-50 border border-green-300 rounded">
+                <p className="text-sm text-green-800">
+                  <span className="font-semibold">Status:</span> Semua penguji sudah ditugaskan
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Warning Box */}
         {warning && (
           <div className="mb-4 p-3 bg-yellow-50 border border-yellow-300 rounded">
             <p className="text-sm text-yellow-800">
               <span className="font-semibold">⚠️ Peringatan:</span> {warning}
             </p>
-          </div>
-        )}
-
-        {/* Info: Why Draft */}
-        {isDraft && formData.jenis_ujian && (
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-300 rounded">
-            <p className="text-sm text-blue-800">
-              <span className="font-semibold">ℹ️ Info:</span> Jadwal akan disimpan sebagai <strong>draft</strong> karena:
-            </p>
-            <ul className="text-sm text-blue-700 mt-1 ml-4 list-disc">
-              {!hasPenugasan && <li>Penugasan dosen belum dilakukan</li>}
-              {warning && <li>Jenis ujian tidak sesuai urutan (melewati tahap sebelumnya)</li>}
-            </ul>
           </div>
         )}
         
@@ -350,7 +426,7 @@ const handleMahasiswaChange = async (e, preselectedJenis = null) => {
             } disabled:bg-gray-400`}
             disabled={loading}
           >
-            {buttonText}
+            {loading ? 'Menyimpan...' : buttonText}
           </button>
         </div>
       </form>

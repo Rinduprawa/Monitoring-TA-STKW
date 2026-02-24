@@ -105,6 +105,7 @@ Route::middleware(['auth:sanctum', 'role:kaprodi'])->group(function () {
     Route::post('/kaprodi/penugasan-dosen', [KaprodiPenugasanDosenController::class, 'store']);
     Route::get('/kaprodi/penugasan-dosen/mahasiswa-available', [KaprodiPenugasanDosenController::class, 'getAvailableMahasiswa']);
     Route::get('/kaprodi/penugasan-dosen/dosen-available', [KaprodiPenugasanDosenController::class, 'getAvailableDosen']);
+    Route::get('/kaprodi/penugasan-dosen/by-mahasiswa-ujian', [KaprodiPenugasanDosenController::class, 'getByMahasiswaUjian']);
     Route::get('/kaprodi/penugasan-dosen/{id}', [KaprodiPenugasanDosenController::class, 'show']);
     Route::get('/kaprodi/penugasan-dosen/{id}/preview-surat', [KaprodiPenugasanDosenController::class, 'previewSuratTugas']);
     Route::put('/kaprodi/penugasan-dosen/{id}', [KaprodiPenugasanDosenController::class, 'update']);

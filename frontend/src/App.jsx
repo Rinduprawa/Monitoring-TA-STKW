@@ -25,6 +25,7 @@ import PengajuanProposalKaprodi from './pages/kaprodi/PengajuanProposal';
 import ValidasiPengajuanProposal from './pages/kaprodi/ValidasiProposal';
 import ManajemenJadwal from './pages/kaprodi/ManajemenJadwal';
 import FormJadwal from './pages/kaprodi/FormJadwal';
+import DetailJadwal from './pages/kaprodi/DetailJadwal';
 import PenugasanDosen from './pages/kaprodi/PenugasanDosen';
 import FormPenugasan from './pages/kaprodi/FormPenugasan';
 import DetailPenugasan from './pages/kaprodi/DetailPenugasan';
@@ -76,6 +77,7 @@ function App() {
               <Route path="/kaprodi/pengajuan-proposal" element={<PengajuanProposalKaprodi />} />
               <Route path="/kaprodi/pengajuan-proposal/validasi/:id" element={<ValidasiPengajuanProposal />} />
               <Route path="jadwal-ujian" element={<ManajemenJadwal />} />
+              <Route path="jadwal-ujian/:id" element={<DetailJadwal />} />
               <Route path="jadwal-ujian/create" element={<FormJadwal />} />
               <Route path="jadwal-ujian/edit/:id" element={<FormJadwal />} />
               <Route path="penugasan-dosen" element={<PenugasanDosen />} />
