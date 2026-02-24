@@ -22,7 +22,7 @@ class PenugasanDosenSeeder extends Seeder
                 PenugasanDosen::create([
                     'mahasiswa_id' => $mhs->id,
                     'dosen_id' => $mhs->dospem_1_id,
-                    'jenis' => 'pembimbing_1',
+                    'jenis_penugasan' => 'pembimbing_1',
                     'file_surat_tugas' => 'surat_tugas/pembimbing_1_' . $mhs->nim . '.pdf',
                 ]);
             }
@@ -32,7 +32,7 @@ class PenugasanDosenSeeder extends Seeder
                 PenugasanDosen::create([
                     'mahasiswa_id' => $mhs->id,
                     'dosen_id' => $mhs->dospem_2_id,
-                    'jenis' => 'pembimbing_2',
+                    'jenis_penugasan' => 'pembimbing_2',
                     'file_surat_tugas' => 'surat_tugas/pembimbing_2_' . $mhs->nim . '.pdf',
                 ]);
             }
@@ -47,7 +47,8 @@ class PenugasanDosenSeeder extends Seeder
                 PenugasanDosen::create([
                     'mahasiswa_id' => $mhs->id,
                     'dosen_id' => $dosen->id,
-                    'jenis' => 'penguji',
+                    'jenis_penugasan' => 'penguji_pembimbing',
+                    'jenis_ujian' => 'sidang_skripsi',
                     'file_surat_tugas' => 'surat_tugas/penguji_' . $mhs->nim . '_' . $dosen->nip . '.pdf',
                 ]);
             }

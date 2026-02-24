@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\MahasiswaBerkasTAController;
 use App\Http\Controllers\Api\KaprodiPendaftaranTAController;
 use App\Http\Controllers\Api\KaprodiPengajuanProposalController;
 use App\Http\Controllers\Api\KaprodiJadwalUjianController;
+use App\Http\Controllers\Api\KaprodiPenugasanDosenController;
 
 
 // Test route
@@ -99,6 +100,15 @@ Route::middleware(['auth:sanctum', 'role:kaprodi'])->group(function () {
     Route::get('/kaprodi/jadwal-ujian/check-sequence/{mahasiswaId}/{jenisUjian}', [KaprodiJadwalUjianController::class, 'checkSequence']);
     Route::post('/kaprodi/jadwal-ujian/{id}/assign-penguji', [KaprodiJadwalUjianController::class, 'assignPenguji']);
     Route::get('/kaprodi/dosen-penguji', [KaprodiJadwalUjianController::class, 'getDosenPenguji']);
+
+    Route::get('/kaprodi/penugasan-dosen', [KaprodiPenugasanDosenController::class, 'index']);
+    Route::post('/kaprodi/penugasan-dosen', [KaprodiPenugasanDosenController::class, 'store']);
+    Route::get('/kaprodi/penugasan-dosen/mahasiswa-available', [KaprodiPenugasanDosenController::class, 'getAvailableMahasiswa']);
+    Route::get('/kaprodi/penugasan-dosen/dosen-available', [KaprodiPenugasanDosenController::class, 'getAvailableDosen']);
+    Route::get('/kaprodi/penugasan-dosen/{id}', [KaprodiPenugasanDosenController::class, 'show']);
+    Route::get('/kaprodi/penugasan-dosen/{id}/preview-surat', [KaprodiPenugasanDosenController::class, 'previewSuratTugas']);
+    Route::put('/kaprodi/penugasan-dosen/{id}', [KaprodiPenugasanDosenController::class, 'update']);
+    Route::delete('/kaprodi/penugasan-dosen/{id}', [KaprodiPenugasanDosenController::class, 'destroy']);
 });
 
 // Khusus admin

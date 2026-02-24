@@ -15,7 +15,8 @@ class PenugasanDosen extends Model
     protected $fillable = [
         'mahasiswa_id',
         'dosen_id',
-        'jenis',
+        'jenis_penugasan',
+        'jenis_ujian',
         'file_surat_tugas',
     ];
 
@@ -38,12 +39,12 @@ class PenugasanDosen extends Model
     // Scopes
     public function scopePembimbing($query)
     {
-        return $query->whereIn('jenis', ['pembimbing_1', 'pembimbing_2']);
+        return $query->whereIn('jenis_penugasan', ['pembimbing_1', 'pembimbing_2']);
     }
 
     public function scopePenguji($query)
     {
-        return $query->where('jenis', 'penguji');
+        return $query->whereIn('jenis_penugasan', ['penguji_struktural', 'penguji_pembimbing', 'penguji_ahli', 'penguji_stakeholder']);
     }
 
     public function scopeByDosen($query, $dosenId)
