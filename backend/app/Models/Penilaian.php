@@ -13,8 +13,7 @@ class Penilaian extends Model
     protected $table = 'penilaian';
 
     protected $fillable = [
-        'jadwal_ujian_id',
-        'dosen_id',
+        'penguji_ujian_id',
         'nilai',
         'catatan',
     ];
@@ -24,14 +23,9 @@ class Penilaian extends Model
     ];
 
     // Relationships
-    public function jadwalUjian()
+    public function pengujiUjian()
     {
-        return $this->belongsTo(JadwalUjian::class);
-    }
-
-    public function dosen()
-    {
-        return $this->belongsTo(Dosen::class);
+        return $this->belongsTo(PengujiUjian::class, 'penguji_ujian_id');
     }
 
     // Scopes
@@ -49,7 +43,7 @@ class Penilaian extends Model
     public static function allPengujiSudahInputNilai($jadwalUjianId)
     {
         $jadwal = JadwalUjian::with('pengujiUjian', 'penilaian')->find($jadwalUjianId);
-        
+
         if (!$jadwal) {
             return false;
         }

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\JadwalUjian;
 use App\Models\Mahasiswa;
 use App\Models\PengajuanProposal;
+use App\Models\PenugasanDosen;
+use App\Models\PengujiUjian;
 use Illuminate\Http\Request;
 
 class KaprodiJadwalUjianController extends Controller
@@ -54,6 +56,18 @@ class KaprodiJadwalUjianController extends Controller
             'tanggal' => date('Y-m-d', strtotime($validated['tanggal'])),
             'status_jadwal' => $validated['status_jadwal'] ?? 'draft',
         ]);
+
+        $penugasan = PenugasanDosen::where('mahasiswa_id', $jadwal->mahasiswa_id)
+            ->where('jenis_ujian', $jadwal->jenis_ujian)
+            ->whereIn('jenis_penugasan', ['penguji_struktural', 'penguji_ahli', 'penguji_pembimbing', 'penguji_stakeholder'])
+            ->get();
+
+        foreach ($penugasan as $p) {
+            PengujiUjian::create([
+                'jadwal_ujian_id' => $jadwal->id,
+                'penugasan_dosen_id' => $p->id,
+            ]);
+        }
 
         return response()->json(['data' => $jadwal], 201);
     }

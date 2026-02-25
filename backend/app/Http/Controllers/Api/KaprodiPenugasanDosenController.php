@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\PenugasanDosen;
 use App\Models\Dosen;
 use App\Models\Mahasiswa;
+use App\Models\JadwalUjian;
+use App\Models\PengujiUjian;
 use Illuminate\Http\Request;
 
 class KaprodiPenugasanDosenController extends Controller
@@ -171,8 +173,23 @@ class KaprodiPenugasanDosenController extends Controller
             'mahasiswa_id' => $request->mahasiswa_id,
             'jenis_penugasan' => $request->jenis_penugasan,
             'jenis_ujian' => $request->jenis_ujian,
-            'surat_tugas' => $suratTugasPath,
+            'file_surat_tugas' => $suratTugasPath,
         ]);
+
+        // ✅ 3. Create penguji_ujian entry ONLY if jadwal exists
+        if ($request->kategori === 'penguji' && $request->jenis_ujian) {
+            $jadwal = JadwalUjian::where('mahasiswa_id', $penugasan->mahasiswa_id)
+                ->where('jenis_ujian', $penugasan->jenis_ujian)
+                ->first();
+
+            if ($jadwal) {
+                // Use firstOrCreate to avoid duplicates
+                PengujiUjian::firstOrCreate([
+                    'jadwal_ujian_id' => $jadwal->id,
+                    'penugasan_dosen_id' => $penugasan->id,
+                ]);
+            }
+        }
 
         return response()->json([
             'message' => 'Penugasan berhasil ditambahkan',
