@@ -26,9 +26,11 @@ import ValidasiPengajuanProposal from './pages/kaprodi/ValidasiProposal';
 import ManajemenJadwal from './pages/kaprodi/ManajemenJadwal';
 import FormJadwal from './pages/kaprodi/FormJadwal';
 import DetailJadwal from './pages/kaprodi/DetailJadwal';
-import PenugasanDosen from './pages/kaprodi/PenugasanDosen';
+import PenugasanDosenKaprodi from './pages/kaprodi/PenugasanDosen';
 import FormPenugasan from './pages/kaprodi/FormPenugasan';
 import DetailPenugasan from './pages/kaprodi/DetailPenugasan';
+
+import PenugasanDosen from './pages/dosen/PenugasanDosen';
 
 function App() {
   return (
@@ -64,6 +66,7 @@ function App() {
             <Route path="/dosen" element={<Dashboard />} >
               <Route path="/dosen/profil" element={<Profile />} />
               <Route path="dashboard" element={<div>Dashboard Dosen</div>} />
+              <Route path="/dosen/penugasan-dosen" element={<PenugasanDosen />} />
             </Route>
           </Route>
 
@@ -80,7 +83,7 @@ function App() {
               <Route path="jadwal-ujian/:id" element={<DetailJadwal />} />
               <Route path="jadwal-ujian/create" element={<FormJadwal />} />
               <Route path="jadwal-ujian/edit/:id" element={<FormJadwal />} />
-              <Route path="penugasan-dosen" element={<PenugasanDosen />} />
+              <Route path="penugasan-dosen" element={<PenugasanDosenKaprodi />} />
               <Route path="penugasan-dosen/create" element={<FormPenugasan />} />
               <Route path="penugasan-dosen/edit/:id" element={<FormPenugasan />} />
               <Route path="penugasan-dosen/:id" element={<DetailPenugasan />} />
