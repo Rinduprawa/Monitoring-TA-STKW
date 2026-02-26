@@ -30,6 +30,7 @@ import PenugasanDosenKaprodi from './pages/kaprodi/PenugasanDosen';
 import FormPenugasan from './pages/kaprodi/FormPenugasan';
 import DetailPenugasan from './pages/kaprodi/DetailPenugasan';
 
+import JadwalUjian from './pages/dosen/JadwalUjian';
 import PenugasanDosen from './pages/dosen/PenugasanDosen';
 
 function App() {
@@ -66,6 +67,7 @@ function App() {
             <Route path="/dosen" element={<Dashboard />} >
               <Route path="/dosen/profil" element={<Profile />} />
               <Route path="dashboard" element={<div>Dashboard Dosen</div>} />
+              <Route path="/dosen/jadwal-ujian" element={<JadwalUjian />} />
               <Route path="/dosen/penugasan-dosen" element={<PenugasanDosen />} />
             </Route>
           </Route>

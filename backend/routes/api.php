@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\KaprodiPengajuanProposalController;
 use App\Http\Controllers\Api\KaprodiJadwalUjianController;
 use App\Http\Controllers\Api\KaprodiPenugasanDosenController;
 
+use App\Http\Controllers\Api\DosenJadwalUjianController;
 use App\Http\Controllers\Api\DosenPenugasanController;
 
 
@@ -79,6 +80,7 @@ Route::middleware(['auth:sanctum', 'role:mahasiswa'])->group(function () {
 // Khusus dosen
 Route::middleware(['auth:sanctum', 'role:dosen'])->group(function () {
     Route::get('/dosen/dashboard', [DosenController::class, 'dashboard']);
+    Route::get('/dosen/jadwal-ujian', [DosenJadwalUjianController::class, 'index']);
     Route::get('/dosen/penugasan', [DosenPenugasanController::class, 'index']);
     Route::get('/dosen/penugasan/pembimbing', [DosenPenugasanController::class, 'pembimbing']);
     Route::get('/dosen/penugasan/penguji', [DosenPenugasanController::class, 'penguji']);

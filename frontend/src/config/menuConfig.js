@@ -43,7 +43,7 @@ export const menuConfig = {
     },
     {
       items: [
-        { path: '/dosen/jadwal', label: 'Jadwal', icon: '☒' },
+        { path: '/dosen/jadwal-ujian', label: 'Jadwal', icon: '☒' },
         { path: '/dosen/penugasan-dosen', label: 'Penugasan', icon: '☒' },
       ]
     },

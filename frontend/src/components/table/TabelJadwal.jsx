@@ -21,7 +21,7 @@ export default function TabelJadwal({ jadwals, loading, showJenisColumn, onEdit,
     return <span className={`px-2 py-1 text-xs border ${styles[status]}`}>{labels[status]}</span>;
   };
 
-  const getJenisUjiLabel = (jenisUjian, bentukTA) => {
+  const getJenisUjiLabel = (jenisUjian) => {
     const labels = {
       'uji_kelayakan_1': 'Uji Kelayakan 1',
       'tes_tahap_1': 'Tes Tahap 1',
@@ -118,12 +118,9 @@ export default function TabelJadwal({ jadwals, loading, showJenisColumn, onEdit,
                       {pengujiCount > 0 ? (
                         <div>
                           <div className="text-sm">
-                            {jadwal.penguji.slice(0, 2).map((p, i) => (
+                            {jadwal.penguji.map((p, i) => (
                               <div key={i}>{p.dosen?.nama}</div>
                             ))}
-                            {pengujiCount > 2 && (
-                              <div className="text-xs text-gray-500">+{pengujiCount - 2} lainnya</div>
-                            )}
                           </div>
                           {pengujiCount < 4 && !selesai && (
                             <button

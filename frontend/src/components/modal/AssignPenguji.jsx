@@ -238,13 +238,14 @@ export default function ModalAssignPenguji({ isOpen, jadwal, onClose, onSuccess 
           {/* Surat Tugas */}
           <div className="mb-4">
             <label className="block mb-2 text-sm font-medium text-gray-800">
-              Surat Tugas
+              Surat Tugas <span className="text-red-500">*</span>
             </label>
             <input
               type="file"
               accept=".pdf"
               onChange={handleFileChange}
               className="w-full px-3 py-2 border border-gray-300"
+              required
             />
             <p className="text-xs text-gray-500 mt-1">*ekstensi yang diizinkan: pdf</p>
             {errors.surat_tugas && (
