@@ -82,7 +82,7 @@ Route::middleware(['auth:sanctum', 'role:dosen'])->group(function () {
     Route::get('/dosen/penugasan', [DosenPenugasanController::class, 'index']);
     Route::get('/dosen/penugasan/pembimbing', [DosenPenugasanController::class, 'pembimbing']);
     Route::get('/dosen/penugasan/penguji', [DosenPenugasanController::class, 'penguji']);
-    Route::get('/dosen/penugasan/{id}/preview-surat', [DosenPenugasanController::class, 'previewSurat']);
+    Route::get('/dosen/penugasan/{id}/preview-surat', [DosenPenugasanController::class, 'previewSuratTugas']);
 });
 
 // Khusus kaprodi

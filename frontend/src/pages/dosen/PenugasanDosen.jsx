@@ -72,53 +72,44 @@ export default function PenugasanDosen() {
   };
 
   const formatPelaksanaan = (jadwal) => {
-    if (!jadwal) return '-';
+    if (!jadwal || !jadwal.tanggal) return 'Belum dijadwalkan';
 
-    const date = new Date(jadwal.tanggal_ujian);
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
-                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    
-    const hari = days[date.getDay()];
-    const tanggal = `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
-    const waktu = `${jadwal.waktu_mulai.slice(0, 5)} - ${jadwal.waktu_selesai.slice(0, 5)}`;
-
-    return { hari, tanggal, waktu };
-  };
-
-  const handlePreview = (penugasanId, fileName) => {
-    const token = localStorage.getItem('token');
-    const url = `http://localhost:8000/api/dosen/penugasan/${penugasanId}/preview-surat?token=${token}`;
-    
-    setPreviewModal({
-      isOpen: true,
-      fileUrl: url,
-      fileName: fileName || 'Surat Tugas'
+    const date = new Date(jadwal.tanggal);
+    const hari = jadwal.hari || date.toLocaleDateString('id-ID', { weekday: 'long' });
+    const tanggal = date.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
     });
+    const waktu = `${jadwal.jam_mulai?.slice(0, 5)} - ${jadwal.jam_selesai?.slice(0, 5)}`;
+
+    return (
+      <div>
+        <div>{hari}, {tanggal}</div>
+        <div className="text-xs text-gray-600">{waktu}</div>
+      </div>
+    );
   };
 
   return (
+    <>
     <div className="p-8">
       <h1 className="text-2xl font-semibold mb-6">Penugasan Dosen</h1>
 
       {/* Tabs */}
-      <div className="flex gap-4 mb-6">
+      <div className="flex gap-2 mb-4">
         <button
           onClick={() => setActiveTab('pembimbing')}
-          className={`px-6 py-2 border ${
-            activeTab === 'pembimbing'
-              ? 'border-gray-800 bg-gray-100 font-semibold'
-              : 'border-gray-300 hover:bg-gray-50'
+          className={`px-6 py-2 border border-gray-800 ${
+            activeTab === 'pembimbing' ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'
           }`}
         >
           Pembimbing
         </button>
         <button
           onClick={() => setActiveTab('penguji')}
-          className={`px-6 py-2 border ${
-            activeTab === 'penguji'
-              ? 'border-gray-800 bg-gray-100 font-semibold'
-              : 'border-gray-300 hover:bg-gray-50'
+          className={`px-6 py-2 border border-gray-800 ${
+            activeTab === 'penguji' ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'
           }`}
         >
           Penguji
@@ -130,28 +121,79 @@ export default function PenugasanDosen() {
         <div className="p-8 text-center">Loading...</div>
       ) : penugasan.length === 0 ? (
         <div className="border border-gray-300 bg-white p-8 text-center text-gray-500">
-          Belum ada penugasan dari kaprodi
+          Belum ada penugasan
         </div>
-      ) : (
+      ) : activeTab === 'pembimbing' ? (
+        /* PEMBIMBING: Flat Table */
         <div className="border border-gray-800 bg-white">
           <table className="w-full">
             <thead className="border-b border-gray-800">
               <tr>
                 <th className="p-3 text-left border-r border-gray-300 w-12">No</th>
                 <th className="p-3 text-left border-r border-gray-300">Nama Mahasiswa</th>
-                {activeTab === 'pembimbing' && (
-                  <th className="p-3 text-left border-r border-gray-300">Judul TA</th>
-                )}
+                <th className="p-3 text-left border-r border-gray-300">Judul TA</th>
                 <th className="p-3 text-left border-r border-gray-300">Bentuk TA</th>
-                {activeTab === 'penguji' && (
-                  <>
-                    <th className="p-3 text-left border-r border-gray-300">Jenis Ujian</th>
-                    <th className="p-3 text-left border-r border-gray-300">Pelaksanaan Ujian</th>
-                  </>
-                )}
-                <th className="p-3 text-left border-r border-gray-300">
-                  {activeTab === 'pembimbing' ? 'Sebagai' : 'Sebagai Penguji'}
-                </th>
+                <th className="p-3 text-left border-r border-gray-300">Sebagai</th>
+                <th className="p-3 text-left">Surat Tugas</th>
+              </tr>
+            </thead>
+            <tbody>
+              {penugasan.map((item, index) => (
+                <tr key={item.id} className="border-b border-gray-300">
+                  <td className="p-3 border-r border-gray-300">{index + 1}</td>
+                  <td className="p-3 border-r border-gray-300">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-gray-200 flex items-center justify-center">
+                        <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="font-medium">{item.mahasiswa_nama}</p>
+                        <p className="text-xs text-gray-500">{item.mahasiswa_nim}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-3 border-r border-gray-300 text-sm">
+                    {item.mahasiswa_judul_ta || '-'}
+                  </td>
+                  <td className="p-3 border-r border-gray-300 capitalize text-sm">
+                    {item.bentuk_ta}
+                  </td>
+                  <td className="p-3 border-r border-gray-300 text-sm">
+                    {getJenisLabel(item.jenis_penugasan)}
+                  </td>
+                <td className="p-3 border-r border-gray-300 text-sm">
+                  {item.surat_tugas ? (
+                    <button 
+                      onClick={() => setPreviewModal({
+                        isOpen: true,
+                        fileUrl: `/kaprodi/penugasan-dosen/${item.id}/preview-surat`,
+                        fileName: 'Surat Tugas'
+                      })}
+                      className="text-blue-600 hover:underline"
+                    >
+                      📄 {item.surat_tugas.split('/').pop()}
+                    </button>
+                  ) : '-'}
+                </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        /* PENGUJI: Nested Table */
+        <div className="border border-gray-800 bg-white">
+          <table className="w-full">
+            <thead className="border-b border-gray-800">
+              <tr>
+                <th className="p-3 text-left border-r border-gray-300 w-12">No</th>
+                <th className="p-3 text-left border-r border-gray-300">Nama Mahasiswa</th>
+                <th className="p-3 text-left border-r border-gray-300">Bentuk TA</th>
+                <th className="p-3 text-left border-r border-gray-300">Jenis Ujian</th>
+                <th className="p-3 text-left border-r border-gray-300">Pelaksanaan Ujian</th>
+                <th className="p-3 text-left border-r border-gray-300">Sebagai Penguji</th>
                 <th className="p-3 text-left">Surat Tugas</th>
               </tr>
             </thead>
@@ -167,10 +209,7 @@ export default function PenugasanDosen() {
                     <td className="p-3 border-r border-gray-300 font-bold">
                       {groupIndex + 1}
                     </td>
-                    <td 
-                      className="p-3 border-r border-gray-300" 
-                      colSpan={activeTab === 'pembimbing' ? 4 : 5}
-                    >
+                    <td className="p-3 border-r border-gray-300" colSpan="6">
                       <div className="flex items-center gap-2">
                         <span className="text-lg">
                           {expandedMhs.has(group.mahasiswa_id) ? '▼' : '▶'}
@@ -193,49 +232,32 @@ export default function PenugasanDosen() {
                     <tr key={item.id} className="border-b border-gray-200 bg-white">
                       <td className="p-3 border-r border-gray-300"></td>
                       <td className="p-3 border-r border-gray-300"></td>
-                      
-                      {activeTab === 'pembimbing' && (
-                        <td className="p-3 border-r border-gray-300 text-sm">
-                          {group.mahasiswa_judul_ta || '-'}
-                        </td>
-                      )}
-                      
                       <td className="p-3 border-r border-gray-300 capitalize text-sm">
                         {group.bentuk_ta}
                       </td>
-                      
-                      {activeTab === 'penguji' && (
-                        <>
-                          <td className="p-3 border-r border-gray-300 text-sm">
-                            {getJenisUjianLabel(item.jenis_ujian)}
-                          </td>
-                          <td className="p-3 border-r border-gray-300 text-sm">
-                            {item.jadwal_ujian ? (
-                              <div>
-                                <div>{formatPelaksanaan(item.jadwal_ujian).hari}, {formatPelaksanaan(item.jadwal_ujian).tanggal}</div>
-                                <div className="text-gray-600">Pukul {formatPelaksanaan(item.jadwal_ujian).waktu}</div>
-                              </div>
-                            ) : (
-                              <span className="text-gray-500">Belum dijadwalkan</span>
-                            )}
-                          </td>
-                        </>
-                      )}
-                      
+                      <td className="p-3 border-r border-gray-300 text-sm">
+                        {getJenisUjianLabel(item.jenis_ujian)}
+                      </td>
+                      <td className="p-3 border-r border-gray-300 text-sm">
+                        {formatPelaksanaan(item.jadwal_ujian)}
+                      </td>
                       <td className="p-3 border-r border-gray-300 text-sm">
                         {getJenisLabel(item.jenis_penugasan)}
                       </td>
-                      
-                      <td className="p-3 text-sm">
-                        {item.surat_tugas ? (
-                          <button
-                            onClick={() => handlePreview(item.id, item.surat_tugas.split('/').pop())}
-                            className="text-blue-600 hover:underline"
-                          >
-                            📄 {item.surat_tugas.split('/').pop()}
-                          </button>
-                        ) : '-'}
-                      </td>
+                <td className="p-3 border-r border-gray-300 text-sm">
+                  {item.surat_tugas ? (
+                    <button 
+                      onClick={() => setPreviewModal({
+                        isOpen: true,
+                        fileUrl: `/dosen/penugasan/${item.id}/preview-surat`,
+                        fileName: 'Surat Tugas'
+                      })}
+                      className="text-blue-600 hover:underline"
+                    >
+                      📄 {item.surat_tugas.split('/').pop()}
+                    </button>
+                  ) : '-'}
+                </td>
                     </tr>
                   ))}
                 </>
@@ -245,6 +267,8 @@ export default function PenugasanDosen() {
         </div>
       )}
 
+      </div>
+      
       {/* File Preview Modal */}
       <FilePreviewModal
         isOpen={previewModal.isOpen}
@@ -252,6 +276,6 @@ export default function PenugasanDosen() {
         fileUrl={previewModal.fileUrl}
         fileName={previewModal.fileName}
       />
-    </div>
+  </>
   );
 }
