@@ -240,11 +240,20 @@ export default function FormJadwal() {
   //   ? formData.jenis_ujian !== initialJenisUjian 
   //   : formData.jenis_ujian !== defaultJenisUjian;
 
-  const isDraft = !hasPenugasan || (warning !== '');  const buttonText = loading 
+  const isDraft = !hasPenugasan || (warning !== '');
+
+  const buttonText = loading 
     ? 'Menyimpan...' 
-    : isDraft 
-    ? 'Simpan Draft' 
-    : 'Tambah Jadwal';
+    : isEdit 
+      ? 'Ubah Jadwal'
+      : isDraft 
+        ? 'Simpan Draft' 
+          : 'Tambah Jadwal';
+  const buttonColor = isEdit
+    ? 'bg-blue-600 hover:bg-blue-700'  // Edit always blue
+    : isDraft
+      ? 'bg-yellow-600 hover:bg-yellow-700'  // Draft yellow
+      : 'bg-blue-600 hover:bg-blue-700';  // Complete blue
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -419,11 +428,7 @@ export default function FormJadwal() {
           </button>
           <button
             type="submit"
-            className={`px-6 py-2 text-white ${
-              isDraft 
-                ? 'bg-yellow-600 hover:bg-yellow-700' 
-                : 'bg-blue-600 hover:bg-blue-700'
-            } disabled:bg-gray-400`}
+            className={`px-6 py-2 text-white ${buttonColor} disabled:bg-gray-400`}
             disabled={loading}
           >
             {loading ? 'Menyimpan...' : buttonText}

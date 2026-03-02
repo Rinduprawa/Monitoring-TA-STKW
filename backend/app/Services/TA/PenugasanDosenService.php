@@ -9,6 +9,7 @@ use App\Models\Kaprodi;
 use App\Models\JadwalUjian;
 use App\Models\PengujiUjian;
 use App\Models\PengajuanProposal;
+use App\Helpers\JadwalHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -368,47 +369,87 @@ class PenugasanDosenService
             }
         }
 
-        // Upload file
-        $suratTugasPath = null;
-
-        if ($request->hasFile('surat_tugas')) {
-            $file = $request->file('surat_tugas');
-            $filename = time() . '_surat_tugas.pdf';
-            $suratTugasPath = $file->storeAs('surat_tugas', $filename, 'public');
-        }
-
-        $penugasan = PenugasanDosen::create([
-            'dosen_id' => $request->dosen_id,
-            'mahasiswa_id' => $request->mahasiswa_id,
-            'jenis_penugasan' => $request->jenis_penugasan,
-            'jenis_ujian' => $request->jenis_ujian,
-            'file_surat_tugas' => $suratTugasPath,
-        ]);
-
-        // Sync penguji_ujian if jadwal exists
         if ($request->kategori === 'penguji' && $request->jenis_ujian) {
 
-            $jadwal = JadwalUjian::where('mahasiswa_id', $penugasan->mahasiswa_id)
-                ->where('jenis_ujian', $penugasan->jenis_ujian)
-                ->first();
+            $mahasiswa = Mahasiswa::findOrFail($request->mahasiswa_id);
 
-            if ($jadwal) {
-                PengujiUjian::firstOrCreate([
-                    'jadwal_ujian_id' => $jadwal->id,
-                    'penugasan_dosen_id' => $penugasan->id,
-                ]);
+            // Define allowed jenis_ujian per bentuk_ta
+            $jenisUjianMapping = [
+                'penelitian' => ['proposal', 'uji_kelayakan_1', 'uji_kelayakan_2', 'sidang_skripsi'],
+                'penciptaan' => ['proposal', 'tes_tahap_1', 'tes_tahap_2', 'pergelaran', 'sidang_komprehensif'],
+            ];
+
+            $allowedJenisUjian = $jenisUjianMapping[$mahasiswa->bentuk_ta] ?? [];
+
+            if (!in_array($request->jenis_ujian, $allowedJenisUjian)) {
+                $bentukLabel = $mahasiswa->bentuk_ta === 'penelitian' ? 'Penelitian' : 'Penciptaan';
+                $ujianLabel = [
+                    'uji_kelayakan_1' => 'Kelayakan',
+                    'uji_kelayakan_2' => 'Kelayakan',
+                    'sidang_skripsi' => 'Sidang Skripsi',
+                    'tes_tahap_1' => 'Tes Tahap',
+                    'tes_tahap_2' => 'Tes Tahap',
+                    'pergelaran' => 'Pergelaran',
+                    'sidang_komprehensif' => 'Sidang Komprehensif',
+                ][$request->jenis_ujian] ?? $request->jenis_ujian;
+
+                return response()->json([
+                    'message' => 'Jenis ujian tidak sesuai dengan bentuk TA mahasiswa',
+                    'errors' => [
+                        'jenis_ujian' => [
+                            "Mahasiswa dengan bentuk TA {$bentukLabel} tidak bisa mengikuti {$ujianLabel}"
+                        ]
+                    ]
+                ], 422);
             }
-        }
+            // Upload file
+            $suratTugasPath = null;
 
-        return response()->json([
-            'message' => 'Penugasan berhasil ditambahkan',
-            'data' => $penugasan->load(['dosen', 'mahasiswa'])
-        ], 201);
+            if ($request->hasFile('surat_tugas')) {
+                $file = $request->file('surat_tugas');
+                $filename = time() . '_surat_tugas.pdf';
+                $suratTugasPath = $file->storeAs('surat_tugas', $filename, 'public');
+            }
+
+            $penugasan = PenugasanDosen::create([
+                'dosen_id' => $request->dosen_id,
+                'mahasiswa_id' => $request->mahasiswa_id,
+                'jenis_penugasan' => $request->jenis_penugasan,
+                'jenis_ujian' => $request->jenis_ujian,
+                'file_surat_tugas' => $suratTugasPath,
+            ]);
+
+            // Sync penguji_ujian if jadwal exists
+            if ($request->kategori === 'penguji' && $request->jenis_ujian) {
+
+                $jadwal = JadwalUjian::where('mahasiswa_id', $penugasan->mahasiswa_id)
+                    ->where('jenis_ujian', $penugasan->jenis_ujian)
+                    ->first();
+
+                if ($jadwal) {
+                    PengujiUjian::firstOrCreate([
+                        'jadwal_ujian_id' => $jadwal->id,
+                        'penugasan_dosen_id' => $penugasan->id,
+                    ]);
+                    JadwalHelper::updateJadwalStatus($jadwal->id);
+                }
+            }
+
+            return response()->json([
+                'message' => 'Penugasan berhasil ditambahkan',
+                'data' => $penugasan->load(['dosen', 'mahasiswa'])
+            ], 201);
+        }
     }
 
     public function update($request, $id)
     {
         $penugasan = PenugasanDosen::findOrFail($id);
+
+        // Store old data before update (for jadwal tracking)
+        $oldMahasiswaId = $penugasan->mahasiswa_id;
+        $oldJenisUjian = $penugasan->jenis_ujian;
+        $oldJenisPenugasan = $penugasan->jenis_penugasan;
 
         // RULE 1: Exact duplicate (exclude current)
         $exactDuplicate = PenugasanDosen::where('id', '!=', $id)
@@ -453,7 +494,7 @@ class PenugasanDosenService
         if ($request->hasFile('surat_tugas')) {
 
             if ($penugasan->file_surat_tugas) {
-                \Illuminate\Support\Facades\Storage::disk('public')
+                Storage::disk('public')
                     ->delete($penugasan->file_surat_tugas);
             }
 
@@ -465,12 +506,77 @@ class PenugasanDosenService
             $penugasan->file_surat_tugas = $path;
         }
 
+        // Update penugasan
         $penugasan->update([
             'dosen_id' => $request->dosen_id,
             'mahasiswa_id' => $request->mahasiswa_id,
             'jenis_penugasan' => $request->jenis_penugasan,
             'jenis_ujian' => $request->jenis_ujian,
         ]);
+
+        // ✅ UPDATE STATUS LOGIC
+        $isPenguji = in_array($request->jenis_penugasan, [
+            'penguji_struktural',
+            'penguji_ahli',
+            'penguji_pembimbing',
+            'penguji_stakeholder'
+        ]);
+
+        if ($isPenguji && $request->jenis_ujian) {
+            // Update penguji_ujian if mahasiswa or jenis_ujian changed
+            if ($oldMahasiswaId != $request->mahasiswa_id || $oldJenisUjian != $request->jenis_ujian) {
+
+                // Delete old penguji_ujian entry
+                $oldJadwal = JadwalUjian::where('mahasiswa_id', $oldMahasiswaId)
+                    ->where('jenis_ujian', $oldJenisUjian)
+                    ->first();
+
+                if ($oldJadwal) {
+                    PengujiUjian::where('jadwal_ujian_id', $oldJadwal->id)
+                        ->where('penugasan_dosen_id', $penugasan->id)
+                        ->delete();
+
+                    // Update old jadwal status
+                    JadwalHelper::updateJadwalStatus($oldJadwal->id);
+                }
+
+                // Create new penguji_ujian entry
+                $newJadwal = JadwalUjian::where('mahasiswa_id', $request->mahasiswa_id)
+                    ->where('jenis_ujian', $request->jenis_ujian)
+                    ->first();
+
+                if ($newJadwal) {
+                    PengujiUjian::updateOrCreate(
+                        [
+                            'jadwal_ujian_id' => $newJadwal->id,
+                            'penugasan_dosen_id' => $penugasan->id,
+                        ],
+                        []
+                    );
+
+                    // Update new jadwal status
+                    JadwalHelper::updateJadwalStatus($newJadwal->id);
+                }
+            } else {
+                // Just update status for current jadwal
+                $jadwal = JadwalUjian::where('mahasiswa_id', $request->mahasiswa_id)
+                    ->where('jenis_ujian', $request->jenis_ujian)
+                    ->first();
+
+                if ($jadwal) {
+                    // Ensure penguji_ujian exists
+                    PengujiUjian::updateOrCreate(
+                        [
+                            'jadwal_ujian_id' => $jadwal->id,
+                            'penugasan_dosen_id' => $penugasan->id,
+                        ],
+                        []
+                    );
+
+                    JadwalHelper::updateJadwalStatus($jadwal->id);
+                }
+            }
+        }
 
         return response()->json([
             'message' => 'Penugasan berhasil diperbarui',
@@ -482,12 +588,34 @@ class PenugasanDosenService
     {
         $penugasan = PenugasanDosen::findOrFail($id);
 
+        // ✅ Get jadwal before delete (for status update)
+        $jadwal = null;
+        $isPenguji = in_array($penugasan->jenis_penugasan, [
+            'penguji_struktural',
+            'penguji_ahli',
+            'penguji_pembimbing',
+            'penguji_stakeholder'
+        ]);
+
+        if ($isPenguji && $penugasan->jenis_ujian) {
+            $jadwal = JadwalUjian::where('mahasiswa_id', $penugasan->mahasiswa_id)
+                ->where('jenis_ujian', $penugasan->jenis_ujian)
+                ->first();
+        }
+
+        // Delete file
         if ($penugasan->file_surat_tugas) {
             Storage::disk('public')
                 ->delete($penugasan->file_surat_tugas);
         }
 
+        // Delete penugasan (cascade will delete penguji_ujian)
         $penugasan->delete();
+
+        // ✅ Update jadwal status after delete
+        if ($jadwal) {
+            JadwalHelper::updateJadwalStatus($jadwal->id);
+        }
 
         return response()->json([
             'message' => 'Penugasan berhasil dihapus'
