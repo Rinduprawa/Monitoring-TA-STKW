@@ -44,7 +44,7 @@ export default function ValidasiProposal() {
       setPreviewError(null);
       
       try {
-        const response = await api.get(`/pengajuan-proposal/${pengajuan.id}/preview`, {
+        const response = await api.get(`/berkas-proposal/${pengajuan.id}`, {
           responseType: 'blob',
           signal: controller.signal
         });

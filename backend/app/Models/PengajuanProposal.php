@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PengajuanProposal extends Model
 {
     use HasFactory, SoftDeletes;
+    public const STATUS_DIPROSES = 'diproses';
+    public const STATUS_DISETUJUI = 'disetujui';
+    public const STATUS_DITOLAK = 'ditolak';
 
     protected $table = 'pengajuan_proposal';
 

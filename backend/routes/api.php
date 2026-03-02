@@ -11,6 +11,9 @@ use App\Http\Controllers\Api\ProfileController;
 
 use App\Http\Controllers\Api\DashboardMahasiswaController;
 
+use App\Http\Controllers\Api\BerkasPendaftaranController;
+use App\Http\Controllers\Api\BerkasProposalController;
+
 use App\Http\Controllers\Api\MahasiswaPendaftaranTAController;
 use App\Http\Controllers\Api\MahasiswaPengajuanProposalController;
 use App\Http\Controllers\Api\MahasiswaBerkasTAController;
@@ -44,12 +47,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     // Routes yang bisa diakses mahasiswa & kaprodi
-    Route::get('/berkas-pendaftaran/{id}', [MahasiswaPendaftaranTAController::class, 'serveBerkas']);
-    Route::get('/berkas-pendaftaran/{id}/download', [MahasiswaPendaftaranTAController::class, 'downloadBerkas']);
-
-    // Routes untuk preview/download pengajuan proposal (bisa diakses mahasiswa & kaprodi)
-    Route::get('/pengajuan-proposal/{id}/preview', [MahasiswaPengajuanProposalController::class, 'previewProposal']);
-    Route::get('/pengajuan-proposal/{id}/download', [MahasiswaPengajuanProposalController::class, 'downloadProposal']);
+    Route::get('/berkas-pendaftaran/{id}', [BerkasPendaftaranController::class, 'show']);
+    Route::get('/berkas-proposal/{id}', [BerkasProposalController::class, 'show']);
 });
 
 // Khusus mahasiswa
@@ -128,6 +127,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::get('/mahasiswa/{id}', [MahasiswaController::class, 'show']);
     Route::put('/mahasiswa/{id}', [MahasiswaController::class, 'update']);
     Route::delete('/mahasiswa/{id}', [MahasiswaController::class, 'destroy']);
+    Route::post('/mahasiswa/{id}/activate', [MahasiswaController::class, 'activate']);
     Route::post('/mahasiswa/{id}/reset-password', [MahasiswaController::class, 'resetPassword']);
 
     // Dosen
@@ -136,6 +136,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::get('/dosen/{id}', [DosenController::class, 'show']);
     Route::put('/dosen/{id}', [DosenController::class, 'update']);
     Route::delete('/dosen/{id}', [DosenController::class, 'destroy']);
+    Route::post('/dosen/{id}/activate', [DosenController::class, 'activate']);
     Route::post('/dosen/{id}/reset-password', [DosenController::class, 'resetPassword']);
 
     // Kaprodi

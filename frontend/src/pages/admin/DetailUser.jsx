@@ -73,7 +73,7 @@ export default function UserDetail({
             <div className="flex border-b border-gray-200 pb-3">
               <div className="w-1/3 font-medium text-gray-700">Jenis Kelamin</div>
               <div className="w-2/3">
-                {userData.jk === 'L' ? 'Laki-laki' : 'Perempuan'}
+                {userData.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}
               </div>
             </div>
           )}

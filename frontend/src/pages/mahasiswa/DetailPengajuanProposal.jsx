@@ -34,7 +34,7 @@ export default function DetailPengajuanProposal() {
   }, [fetchPengajuan]);
 
   const handlePreview = () => {
-    const url = `http://localhost:8000/api/pengajuan-proposal/${id}/preview`;
+    const url = `http://localhost:8000/api/berkas-proposal/${id}`;
     setPreviewModal({
       isOpen: true,
       fileUrl: url,

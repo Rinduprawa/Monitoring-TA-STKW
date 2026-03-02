@@ -3,48 +3,36 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\PengajuanProposal;
-use App\Models\Kaprodi;
+use App\Services\TA\PengajuanProposalService;
 use Illuminate\Http\Request;
 
 class KaprodiPengajuanProposalController extends Controller
 {
-    /**
-     * Get list semua pengajuan proposal mahasiswa
-     */
+    protected PengajuanProposalService $proposalService;
+
+    public function __construct(PengajuanProposalService $proposalService)
+    {
+        $this->proposalService = $proposalService;
+    }
+
     public function index(Request $request)
     {
-        $user = $request->user();
+        $kaprodi = $this->proposalService->getKaprodiByUser($request->user()->id);
 
-        $kaprodi = Kaprodi::where('user_id', $user->id)->first();
-
-        if (!$kaprodi) {
-            return response()->json(['message' => 'Kaprodi not found'], 404);
-        }
-
-        $pengajuans = PengajuanProposal::with('mahasiswa.user')
-            ->whereHas('mahasiswa', function ($query) use ($kaprodi) {
-                $query->where('prodi_id', $kaprodi->prodi_id);
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return response()->json(['data' => $pengajuans], 200);
+        return response()->json([
+            'data' => $this->proposalService->getByProdi($kaprodi)
+        ]);
     }
 
-    /**
-     * Get detail pengajuan untuk validasi
-     */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $pengajuan = PengajuanProposal::with('mahasiswa.user')->findOrFail($id);
+        $kaprodi = $this->proposalService->getKaprodiByUser($request->user()->id);
 
-        return response()->json(['data' => $pengajuan], 200);
+        return response()->json([
+            'data' => $this->proposalService->findForKaprodi($kaprodi, $id)
+        ]);
     }
 
-    /**
-     * Validasi pengajuan proposal (approve/reject)
-     */
     public function validasi(Request $request, $id)
     {
         $request->validate([
@@ -52,16 +40,18 @@ class KaprodiPengajuanProposalController extends Controller
             'catatan_kaprodi' => 'nullable|string',
         ]);
 
-        $pengajuan = PengajuanProposal::findOrFail($id);
+        $kaprodi = $this->proposalService->getKaprodiByUser($request->user()->id);
 
-        $pengajuan->update([
-            'status' => $request->status,
-            'catatan_kaprodi' => $request->catatan_kaprodi,
-        ]);
+        $proposal = $this->proposalService->validateByKaprodi(
+            $kaprodi,
+            $id,
+            $request->status,
+            $request->catatan_kaprodi
+        );
 
         return response()->json([
             'message' => 'Validasi berhasil disimpan',
-            'data' => $pengajuan,
-        ], 200);
+            'data' => $proposal
+        ]);
     }
 }

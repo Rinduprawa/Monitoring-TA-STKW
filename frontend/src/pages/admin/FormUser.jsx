@@ -16,7 +16,7 @@ export default function UserForm({
     nip: '',
     prodi_id: '',
     email: '',
-    jk: '',
+    jenis_kelamin: '',
     password: 'password1234',
   });
 
@@ -40,7 +40,7 @@ export default function UserForm({
         nip: userData.nip || '',
         prodi_id: String(userData.prodi_id) || '', // Convert to string
         email: userData.user?.email || '',
-        jk: userData.jenis_kelamin || '',
+        jenis_kelamin: userData.jenis_kelamin || '',
         password: '',
       });
     }
@@ -98,8 +98,8 @@ export default function UserForm({
       newErrors.email = ['Email wajib diisi'];
     }
     
-    if (activeTab === 'mahasiswa' && !formData.jk) {
-      newErrors.jk = ['Jenis kelamin wajib dipilih'];
+    if (activeTab === 'mahasiswa' && !formData.jenis_kelamin) {
+      newErrors.jenis_kelamin = ['Jenis kelamin wajib dipilih'];
     }
     
     if (mode === 'create' && !formData.password.trim()) {
@@ -124,7 +124,7 @@ export default function UserForm({
 
       if (activeTab === 'mahasiswa') {
         payload.nim = formData.nim;
-        payload.jk = formData.jk;
+        payload.jenis_kelamin = formData.jenis_kelamin;
       } else {
         payload.nip = formData.nip;
       }
@@ -245,8 +245,8 @@ export default function UserForm({
         {activeTab === 'mahasiswa' && (
           <FormSelect
             label="Jenis Kelamin"
-            name="jk"
-            value={formData.jk}
+            name="jenis_kelamin"
+            value={formData.jenis_kelamin}
             onChange={handleChange}
             options={[
               { value: 'L', label: 'Laki-laki' },
@@ -254,7 +254,7 @@ export default function UserForm({
             ]}
             placeholder="Pilih jenis kelamin"
             required
-            error={errors.jk?.[0]}
+            error={errors.jenis_kelamin?.[0]}
           />
         )}
 
