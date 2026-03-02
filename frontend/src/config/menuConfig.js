@@ -24,7 +24,7 @@ export const menuConfig = {
     {
       items: [
         { path: '/mahasiswa/bimbingan', label: 'Bimbingan', icon: '☒' },
-        { path: '/mahasiswa/jadwal', label: 'Jadwal', icon: '☒' },
+        { path: '/mahasiswa/jadwal-ujian', label: 'Jadwal', icon: '☒' },
       ]
     },
     {

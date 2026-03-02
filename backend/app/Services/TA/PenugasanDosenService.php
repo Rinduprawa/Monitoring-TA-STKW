@@ -609,6 +609,10 @@ class PenugasanDosenService
                 ->delete($penugasan->file_surat_tugas);
         }
 
+        DB::table('penguji_ujian')
+            ->where('penugasan_dosen_id', $penugasan->id)
+            ->delete();
+
         // Delete penugasan (cascade will delete penguji_ujian)
         $penugasan->delete();
 
