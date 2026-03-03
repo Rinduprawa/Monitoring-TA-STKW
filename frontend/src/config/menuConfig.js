@@ -18,7 +18,7 @@ export const menuConfig = {
       items: [
         { path: '/mahasiswa/pendaftaran-ta', label: 'Pendaftaran Tugas Akhir', icon: '☒' },
         { path: '/mahasiswa/pengajuan-proposal', label: 'Pengajuan Proposal', icon: '☒' },
-        { path: '/mahasiswa/ujian', label: 'Pengajuan Ujian', icon: '☒' },
+        { path: '/mahasiswa/pengajuan-ujian', label: 'Pengajuan Ujian', icon: '☒' },
       ]
     },
     {

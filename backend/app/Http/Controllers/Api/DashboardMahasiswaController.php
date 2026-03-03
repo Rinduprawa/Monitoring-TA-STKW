@@ -32,7 +32,6 @@ class DashboardMahasiswaController extends Controller
 
             // Status pendaftaran TA
             $pendaftaran = PendaftaranTa::where('mahasiswa_id', $mahasiswa->id)
-                ->where('is_active', true)
                 ->first();
             $statusPendaftaran = $pendaftaran ? $pendaftaran->status_validasi : null;
 

@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\MahasiswaPendaftaranTAController;
 use App\Http\Controllers\Api\MahasiswaPengajuanProposalController;
 use App\Http\Controllers\Api\MahasiswaBerkasTAController;
 use App\Http\Controllers\Api\MahasiswaJadwalUjianController;
+use App\Http\Controllers\Api\MahasiswaPengajuanUjianController;
 
 
 use App\Http\Controllers\Api\KaprodiPendaftaranTAController;
@@ -78,6 +79,12 @@ Route::middleware(['auth:sanctum', 'role:mahasiswa'])->group(function () {
     Route::delete('/berkas-ta/{jenisBerkas}', [MahasiswaBerkasTAController::class, 'destroy']);
 
     Route::get('/jadwal-ujian', [MahasiswaJadwalUjianController::class, 'index']);
+    Route::get('/pengajuan-ujian', [MahasiswaPengajuanUjianController::class, 'index']);
+    Route::get('/pengajuan-ujian/can-submit', [MahasiswaPengajuanUjianController::class, 'canSubmit']);
+    Route::post('/pengajuan-ujian', [MahasiswaPengajuanUjianController::class, 'store']);
+    Route::get('/pengajuan-ujian/{id}', [MahasiswaPengajuanUjianController::class, 'show']);
+    Route::post('/pengajuan-ujian/{id}', [MahasiswaPengajuanUjianController::class, 'update']);
+    Route::get('/pengajuan-ujian/{id}/preview-bukti', [MahasiswaPengajuanUjianController::class, 'previewBukti']);
 });
 
 // Khusus dosen

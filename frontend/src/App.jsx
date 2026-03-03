@@ -18,6 +18,8 @@ import FormPendaftaranTA from './pages/mahasiswa/FormPendaftaranTA';
 import FormPengajuanProposal from './pages/mahasiswa/FormPengajuanProposal';
 import DetailPengajuanProposal from './pages/mahasiswa/DetailPengajuanProposal';
 import JadwalUjianMahasiswa from './pages/mahasiswa/JadwalUjian';
+import PengajuanUjian from './pages/mahasiswa/PengajuanUjian';
+import FormPengajuanUjian from './pages/mahasiswa/FormPengajuanUjian';
 import BerkasTA from './pages/mahasiswa/BerkasTA';
 
 import PendaftaranTAKaprodi from './pages/kaprodi/PendaftaranTA';
@@ -60,6 +62,10 @@ function App() {
               <Route path="/mahasiswa/pengajuan-proposal/edit/:id" element={<FormPengajuanProposal />} />
               <Route path="/mahasiswa/pengajuan-proposal/:id" element={<DetailPengajuanProposal />} />
               <Route path="/mahasiswa/jadwal-ujian" element={<JadwalUjianMahasiswa />} />
+              <Route path="/mahasiswa/pengajuan-ujian" element={<PengajuanUjian />} />
+              <Route path="/mahasiswa/pengajuan-ujian/tambah" element={<FormPengajuanUjian />} />
+              <Route path="/mahasiswa/pengajuan-ujian/edit/:id" element={<FormPengajuanUjian />} />
+              <Route path="/mahasiswa/pengajuan-ujian/:id" element={<FormPengajuanUjian />} />
               <Route path="/mahasiswa/berkas-ta" element={<BerkasTA />} />
             </Route>
           </Route>
