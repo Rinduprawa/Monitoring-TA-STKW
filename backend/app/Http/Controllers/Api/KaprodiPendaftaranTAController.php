@@ -11,6 +11,11 @@ class KaprodiPendaftaranTAController extends Controller
 {
     protected PendaftaranTAService $pendaftaranTAService;
 
+    public function __construct(PendaftaranTAService $pendaftaranTAService)
+    {
+        $this->pendaftaranTAService = $pendaftaranTAService;
+    }
+
     public function index(Request $request)
     {
         $kaprodi = $this->pendaftaranTAService->getKaprodiByUser($request->user()->id);

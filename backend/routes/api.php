@@ -25,9 +25,11 @@ use App\Http\Controllers\Api\KaprodiPendaftaranTAController;
 use App\Http\Controllers\Api\KaprodiPengajuanProposalController;
 use App\Http\Controllers\Api\KaprodiJadwalUjianController;
 use App\Http\Controllers\Api\KaprodiPenugasanDosenController;
+use App\Http\Controllers\Api\KaprodiPengajuanUjianController;
 
 use App\Http\Controllers\Api\DosenJadwalUjianController;
 use App\Http\Controllers\Api\DosenPenugasanController;
+use App\Http\Controllers\Api\DosenPengajuanUjianController;
 
 
 // Test route
@@ -95,6 +97,12 @@ Route::middleware(['auth:sanctum', 'role:dosen'])->group(function () {
     Route::get('/dosen/penugasan/pembimbing', [DosenPenugasanController::class, 'pembimbing']);
     Route::get('/dosen/penugasan/penguji', [DosenPenugasanController::class, 'penguji']);
     Route::get('/dosen/penugasan/{id}/preview-surat', [DosenPenugasanController::class, 'previewSuratTugas']);
+
+    Route::get('/dosen/pengajuan-ujian', [DosenPengajuanUjianController::class, 'index']);
+    Route::post('/dosen/pengajuan-ujian/{id}/approve', [DosenPengajuanUjianController::class, 'approve']);
+    Route::post('/dosen/pengajuan-ujian/{id}/reject', [DosenPengajuanUjianController::class, 'reject']);
+    Route::get('/dosen/pengajuan-ujian/{id}/preview-bukti', [DosenPengajuanUjianController::class, 'previewBukti']);
+
 });
 
 // Khusus kaprodi
@@ -128,6 +136,11 @@ Route::middleware(['auth:sanctum', 'role:kaprodi'])->group(function () {
     Route::get('/kaprodi/penugasan-dosen/{id}/preview-surat', [KaprodiPenugasanDosenController::class, 'previewSuratTugas']);
     Route::put('/kaprodi/penugasan-dosen/{id}', [KaprodiPenugasanDosenController::class, 'update']);
     Route::delete('/kaprodi/penugasan-dosen/{id}', [KaprodiPenugasanDosenController::class, 'destroy']);
+
+    Route::get('/kaprodi/pengajuan-ujian', [KaprodiPengajuanUjianController::class, 'index']);
+    Route::get('/kaprodi/pengajuan-ujian/{id}', [KaprodiPengajuanUjianController::class, 'show']);
+    Route::get('/kaprodi/pengajuan-ujian/{id}/preview-bukti', [KaprodiPengajuanUjianController::class, 'previewBukti']);
+    Route::post('/kaprodi/pengajuan-ujian/{id}/validasi', [KaprodiPengajuanUjianController::class, 'validasi']);
 });
 
 // Khusus admin

@@ -20,6 +20,7 @@ import DetailPengajuanProposal from './pages/mahasiswa/DetailPengajuanProposal';
 import JadwalUjianMahasiswa from './pages/mahasiswa/JadwalUjian';
 import PengajuanUjian from './pages/mahasiswa/PengajuanUjian';
 import FormPengajuanUjian from './pages/mahasiswa/FormPengajuanUjian';
+import DetailPengajuanUjian from './pages/mahasiswa/DetailPengajuanUjian';
 import BerkasTA from './pages/mahasiswa/BerkasTA';
 
 import PendaftaranTAKaprodi from './pages/kaprodi/PendaftaranTA';
@@ -32,9 +33,14 @@ import DetailJadwal from './pages/kaprodi/DetailJadwal';
 import PenugasanDosenKaprodi from './pages/kaprodi/PenugasanDosen';
 import FormPenugasan from './pages/kaprodi/FormPenugasan';
 import DetailPenugasan from './pages/kaprodi/DetailPenugasan';
+import PengajuanUjianKaprodi from './pages/kaprodi/PengajuanUjian';
+import ValidasiUjian from './pages/kaprodi/ValidasiPengajuanUjian';
+import DetailPengajuanUjianKaprodi from './pages/kaprodi/DetailPengajuanUjian';
 
 import JadwalUjian from './pages/dosen/JadwalUjian';
 import PenugasanDosen from './pages/dosen/PenugasanDosen';
+import ValidasiPengajuanUjian from './pages/dosen/PengajuanUjian';
+
 
 function App() {
   return (
@@ -65,7 +71,7 @@ function App() {
               <Route path="/mahasiswa/pengajuan-ujian" element={<PengajuanUjian />} />
               <Route path="/mahasiswa/pengajuan-ujian/tambah" element={<FormPengajuanUjian />} />
               <Route path="/mahasiswa/pengajuan-ujian/edit/:id" element={<FormPengajuanUjian />} />
-              <Route path="/mahasiswa/pengajuan-ujian/:id" element={<FormPengajuanUjian />} />
+              <Route path="/mahasiswa/pengajuan-ujian/:id" element={<DetailPengajuanUjian />} />
               <Route path="/mahasiswa/berkas-ta" element={<BerkasTA />} />
             </Route>
           </Route>
@@ -77,6 +83,7 @@ function App() {
               <Route path="dashboard" element={<div>Dashboard Dosen</div>} />
               <Route path="/dosen/jadwal-ujian" element={<JadwalUjian />} />
               <Route path="/dosen/penugasan-dosen" element={<PenugasanDosen />} />
+              <Route path="/dosen/pengajuan-ujian" element={<ValidasiPengajuanUjian />} />
             </Route>
           </Route>
 
@@ -97,6 +104,9 @@ function App() {
               <Route path="penugasan-dosen/create" element={<FormPenugasan />} />
               <Route path="penugasan-dosen/edit/:id" element={<FormPenugasan />} />
               <Route path="penugasan-dosen/:id" element={<DetailPenugasan />} />
+              <Route path="/kaprodi/pengajuan-ujian" element={<PengajuanUjianKaprodi />} />
+              <Route path="/kaprodi/pengajuan-ujian/validasi/:id" element={<ValidasiUjian />} />
+              <Route path="/kaprodi/pengajuan-ujian/:id" element={<DetailPengajuanUjianKaprodi />} />
             </Route>
           </Route>
 

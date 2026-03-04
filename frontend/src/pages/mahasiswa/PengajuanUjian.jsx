@@ -8,7 +8,9 @@ export default function PengajuanUjian() {
   const navigate = useNavigate();
   const [pengajuan, setPengajuan] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [canSubmit, setCanSubmit] = useState(false);
+  const [canSubmit, setCanSubmit] = useState(true);
+  const [canSubmitMessage, setCanSubmitMessage] = useState(null);
+
 
   useEffect(() => {
     fetchData();
@@ -30,7 +32,10 @@ export default function PengajuanUjian() {
   const checkCanSubmit = async () => {
     try {
       const response = await api.get('/pengajuan-ujian/can-submit');
-      setCanSubmit(response.data.can_submit);
+      if (!response.data.eligible) {
+        setCanSubmit(false);
+        setCanSubmitMessage(response.data.message);
+      }
     } catch (error) {
       console.error('Failed to check can submit:', error);
     }
@@ -53,7 +58,7 @@ export default function PengajuanUjian() {
     const labels = {
       'diproses_pembimbing': 'Diproses Pembimbing',
       'ditolak_pembimbing': 'Ditolak Pembimbing',
-      'disetujui_pembimbing': 'Disetujui Pembimbing',
+      'disetujui_pembimbing': 'Diproses Kaprodi',
       'ditolak_kaprodi': 'Ditolak Kaprodi',
       'disetujui_kaprodi': 'Disetujui Kaprodi',
     };
@@ -64,7 +69,7 @@ export default function PengajuanUjian() {
     const colors = {
       'diproses_pembimbing': 'bg-blue-50 border-blue-600 text-blue-600',
       'ditolak_pembimbing': 'bg-red-50 border-red-600 text-red-600',
-      'disetujui_pembimbing': 'bg-green-50 border-green-600 text-green-600',
+      'disetujui_pembimbing': 'bg-blue-50 border-blue-600 text-blue-600',
       'ditolak_kaprodi': 'bg-red-50 border-red-600 text-red-600',
       'disetujui_kaprodi': 'bg-green-50 border-green-600 text-green-600',
     };
@@ -95,7 +100,6 @@ export default function PengajuanUjian() {
               ? 'bg-white text-gray-800 hover:bg-gray-100'
               : 'bg-gray-200 text-gray-500 cursor-not-allowed'
           }`}
-          title={!canSubmit ? 'Anda masih memiliki pengajuan yang sedang diproses' : ''}
         >
           + Tambah Pengajuan
         </button>
@@ -104,8 +108,16 @@ export default function PengajuanUjian() {
       {loading ? (
         <div className="p-8 text-center">Loading...</div>
       ) : pengajuan.length === 0 ? (
-        <div className="border border-gray-300 bg-white p-8 text-center text-gray-500">
-          Belum ada pengajuan ujian
+        <div>
+          {!canSubmit ? (
+            <div className="bg-white border border-red-300 p-8 text-center text-red-600">
+              {canSubmitMessage}
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-300 p-8 text-center text-gray-500">
+              Belum ada pengajuan. Klik tombol "Tambah Pengajuan" untuk membuat pengajuan baru.
+            </div>
+          )}
         </div>
       ) : (
         <div className="border border-gray-800 bg-white">

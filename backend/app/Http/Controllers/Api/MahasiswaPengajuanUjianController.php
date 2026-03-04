@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Semester;
+use App\Models\PendaftaranTa;
+use App\Models\PengajuanProposal;
 use App\Models\Mahasiswa;
 use App\Models\PengajuanUjian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class MahasiswaPengajuanUjianController extends Controller
 {
@@ -38,19 +42,62 @@ class MahasiswaPengajuanUjianController extends Controller
         $mahasiswa = Mahasiswa::where('user_id', $user->id)->first();
 
         if (!$mahasiswa) {
-            return response()->json(['message' => 'Mahasiswa not found'], 404);
+            return response()->json([
+                'eligible' => false,
+                'message' => 'Mahasiswa tidak ditemukan.'
+            ], 404);
         }
 
-        // Check if there's any pending pengajuan (not yet approved/rejected by kaprodi)
+        // 1️⃣ Cek semester aktif
+        $semesterAktif = Semester::where('is_active', true)->first();
+
+        if (!$semesterAktif) {
+            return response()->json([
+                'eligible' => false,
+                'message' => 'Tidak ada semester aktif.'
+            ]);
+        }
+
+        // 2️⃣ Cek pendaftaran TA valid
+        $pendaftaran = PendaftaranTa::where('mahasiswa_id', $mahasiswa->id)
+            ->where('semester_id', $semesterAktif->id)
+            ->where('status_validasi', 'valid')
+            ->first();
+
+        if (!$pendaftaran) {
+            return response()->json([
+                'eligible' => false,
+                'message' => 'Silakan melakukan pendaftaran tugas akhir terlebih dahulu.'
+            ]);
+        }
+
+        // 3️⃣ Cek proposal sudah disetujui
+        $proposalValid = PengajuanProposal::where('mahasiswa_id', $mahasiswa->id)
+            ->where('status', 'disetujui')
+            ->first();
+
+        if (!$proposalValid) {
+            return response()->json([
+                'eligible' => false,
+                'message' => 'Silakan mengajukan proposal dan menunggu hingga disetujui terlebih dahulu.'
+            ]);
+        }
+
+        // 4️⃣ Cek masih ada pengajuan ujian yang diproses
         $hasPending = PengajuanUjian::where('mahasiswa_id', $mahasiswa->id)
             ->whereNotIn('status', ['ditolak_kaprodi', 'disetujui_kaprodi'])
             ->exists();
 
+        if ($hasPending) {
+            return response()->json([
+                'eligible' => false,
+                'message' => 'Anda masih memiliki pengajuan ujian yang sedang diproses.'
+            ]);
+        }
+
         return response()->json([
-            'can_submit' => !$hasPending,
-            'message' => $hasPending
-                ? 'Anda masih memiliki pengajuan yang sedang diproses'
-                : 'Anda dapat mengajukan ujian baru'
+            'eligible' => true,
+            'message' => 'Anda dapat mengajukan ujian.'
         ]);
     }
 
@@ -64,6 +111,38 @@ class MahasiswaPengajuanUjianController extends Controller
 
         if (!$mahasiswa) {
             return response()->json(['message' => 'Mahasiswa not found'], 404);
+        }
+
+        // 1. Cek semester aktif
+        $semesterAktif = Semester::where('is_active', true)->first();
+
+        if (!$semesterAktif) {
+            throw ValidationException::withMessages([
+                'semester' => ['Tidak ada semester aktif']
+            ]);
+        }
+
+        // 2. Cek pendaftaran TA valid
+        $pendaftaran = PendaftaranTa::where('mahasiswa_id', $mahasiswa->id)
+            ->where('semester_id', $semesterAktif->id)
+            ->where('status_validasi', 'valid')
+            ->first();
+
+        if (!$pendaftaran) {
+            throw ValidationException::withMessages([
+                'pendaftaran' => ['Silakan melakukan pendaftaran tugas akhir terlebih dahulu.']
+            ]);
+        }
+
+        // 3. Cek proposal sudah disetujui
+        $proposalValid = PengajuanProposal::where('mahasiswa_id', $mahasiswa->id)
+            ->where('status', 'disetujui')
+            ->first();
+
+        if (!$proposalValid) {
+            throw ValidationException::withMessages([
+                'proposal' => ['Silakan mengajukan proposal dan menunggu hingga disetujui terlebih dahulu.']
+            ]);
         }
 
         $request->validate([

@@ -402,44 +402,45 @@ class PenugasanDosenService
                     ]
                 ], 422);
             }
-            // Upload file
-            $suratTugasPath = null;
-
-            if ($request->hasFile('surat_tugas')) {
-                $file = $request->file('surat_tugas');
-                $filename = time() . '_surat_tugas.pdf';
-                $suratTugasPath = $file->storeAs('surat_tugas', $filename, 'public');
-            }
-
-            $penugasan = PenugasanDosen::create([
-                'dosen_id' => $request->dosen_id,
-                'mahasiswa_id' => $request->mahasiswa_id,
-                'jenis_penugasan' => $request->jenis_penugasan,
-                'jenis_ujian' => $request->jenis_ujian,
-                'file_surat_tugas' => $suratTugasPath,
-            ]);
-
-            // Sync penguji_ujian if jadwal exists
-            if ($request->kategori === 'penguji' && $request->jenis_ujian) {
-
-                $jadwal = JadwalUjian::where('mahasiswa_id', $penugasan->mahasiswa_id)
-                    ->where('jenis_ujian', $penugasan->jenis_ujian)
-                    ->first();
-
-                if ($jadwal) {
-                    PengujiUjian::firstOrCreate([
-                        'jadwal_ujian_id' => $jadwal->id,
-                        'penugasan_dosen_id' => $penugasan->id,
-                    ]);
-                    JadwalHelper::updateJadwalStatus($jadwal->id);
-                }
-            }
-
-            return response()->json([
-                'message' => 'Penugasan berhasil ditambahkan',
-                'data' => $penugasan->load(['dosen', 'mahasiswa'])
-            ], 201);
         }
+
+        // Upload file
+        $suratTugasPath = null;
+        if ($request->hasFile('surat_tugas')) {
+            $file = $request->file('surat_tugas');
+            $filename = time() . '_surat_tugas.pdf';
+            $suratTugasPath = $file->storeAs('surat_tugas', $filename, 'public');
+        }
+
+        $penugasan = PenugasanDosen::create([
+            'dosen_id' => $request->dosen_id,
+            'mahasiswa_id' => $request->mahasiswa_id,
+            'jenis_penugasan' => $request->jenis_penugasan,
+            'jenis_ujian' => $request->jenis_ujian,
+            'file_surat_tugas' => $suratTugasPath,
+        ]);
+
+        // Sync penguji_ujian if jadwal exists
+        if ($request->kategori === 'penguji' && $request->jenis_ujian) {
+
+            $jadwal = JadwalUjian::where('mahasiswa_id', $penugasan->mahasiswa_id)
+                ->where('jenis_ujian', $penugasan->jenis_ujian)
+                ->first();
+
+            if ($jadwal) {
+                PengujiUjian::firstOrCreate([
+                    'jadwal_ujian_id' => $jadwal->id,
+                    'penugasan_dosen_id' => $penugasan->id,
+                ]);
+                JadwalHelper::updateJadwalStatus($jadwal->id);
+            }
+        }
+
+        return response()->json([
+            'message' => 'Penugasan berhasil ditambahkan',
+            'data' => $penugasan->load(['dosen', 'mahasiswa'])
+        ], 201);
+
     }
 
     public function update($request, $id)
