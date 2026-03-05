@@ -41,6 +41,9 @@ class DosenJadwalUjianController extends Controller
         $jadwals->map(function ($jadwal) {
             $pengujiList = PengujiUjian::where('jadwal_ujian_id', $jadwal->id)
                 ->with('penugasanDosen.dosen')
+                ->whereHas('penugasanDosen', function ($q) {
+                    $q->whereNull('deleted_at'); // ← AND THIS
+                })
                 ->get()
                 ->map(function ($pu) {
                     return [

@@ -20,7 +20,6 @@ use App\Http\Controllers\Api\MahasiswaBerkasTAController;
 use App\Http\Controllers\Api\MahasiswaJadwalUjianController;
 use App\Http\Controllers\Api\MahasiswaPengajuanUjianController;
 
-
 use App\Http\Controllers\Api\KaprodiPendaftaranTAController;
 use App\Http\Controllers\Api\KaprodiPengajuanProposalController;
 use App\Http\Controllers\Api\KaprodiJadwalUjianController;
@@ -30,6 +29,7 @@ use App\Http\Controllers\Api\KaprodiPengajuanUjianController;
 use App\Http\Controllers\Api\DosenJadwalUjianController;
 use App\Http\Controllers\Api\DosenPenugasanController;
 use App\Http\Controllers\Api\DosenPengajuanUjianController;
+use App\Http\Controllers\Api\DosenBimbinganController;
 
 
 // Test route
@@ -98,11 +98,17 @@ Route::middleware(['auth:sanctum', 'role:dosen'])->group(function () {
     Route::get('/dosen/penugasan/penguji', [DosenPenugasanController::class, 'penguji']);
     Route::get('/dosen/penugasan/{id}/preview-surat', [DosenPenugasanController::class, 'previewSuratTugas']);
 
+    Route::get('/dosen/bimbingan', [DosenBimbinganController::class, 'index']);
+    Route::get('/dosen/bimbingan/{mahasiswaId}', [DosenBimbinganController::class, 'show']);
+    Route::post('/dosen/bimbingan/{mahasiswaId}/catatan', [DosenBimbinganController::class, 'store']);
+    Route::get('/dosen/bimbingan/{mahasiswaId}/catatan/{catatanId}',[DosenBimbinganController::class, 'showCatatan']);
+    Route::put('/dosen/bimbingan/{mahasiswaId}/catatan/{catatanId}', [DosenBimbinganController::class, 'update']);
+    Route::delete('/dosen/bimbingan/{mahasiswaId}/catatan/{catatanId}', [DosenBimbinganController::class, 'destroy']);
+
     Route::get('/dosen/pengajuan-ujian', [DosenPengajuanUjianController::class, 'index']);
     Route::post('/dosen/pengajuan-ujian/{id}/approve', [DosenPengajuanUjianController::class, 'approve']);
     Route::post('/dosen/pengajuan-ujian/{id}/reject', [DosenPengajuanUjianController::class, 'reject']);
     Route::get('/dosen/pengajuan-ujian/{id}/preview-bukti', [DosenPengajuanUjianController::class, 'previewBukti']);
-
 });
 
 // Khusus kaprodi

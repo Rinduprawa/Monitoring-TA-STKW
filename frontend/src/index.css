@@ -8,6 +8,26 @@
   }
 }
 
+/* src/index.css - REMOVE or REPLACE the @media print section */
+
+@media print {
+  /* Force backgrounds and borders to print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Set page margins */
+  @page {
+    margin: 1.5cm;
+  }
+
+  /* Avoid page breaks inside elements */
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+}
+
 /* @layer components {
   .btn-primary {
     @apply bg-primary-600 text-black px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors;

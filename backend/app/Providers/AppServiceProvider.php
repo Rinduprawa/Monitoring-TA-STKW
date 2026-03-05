@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\JadwalUjian;
+use App\Observers\JadwalUjianObserver;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        JadwalUjian::observe(JadwalUjianObserver::class);
+
     }
 }
