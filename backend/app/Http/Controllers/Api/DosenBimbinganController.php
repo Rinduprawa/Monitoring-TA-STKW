@@ -132,7 +132,7 @@ class DosenBimbinganController extends Controller
         $penugasan = PenugasanDosen::where('dosen_id', $dosen->id)
             ->whereIn('jenis_penugasan', ['pembimbing_1', 'pembimbing_2'])
             ->with('mahasiswa.prodi')
-            ->get();
+            ->first();
 
         if (!$penugasan) {
             return response()->json(['message' => 'Unauthorized'], 403);
@@ -179,33 +179,35 @@ class DosenBimbinganController extends Controller
             ])
             ->orderBy('tanggal_bimbingan', 'desc')
             ->get()
-            ->map(function($catatan) {
-            // Format label
-            $pembimbingLabel = '-';
-            if ($catatan->dosen && $catatan->dosen->penugasanDosen->isNotEmpty()) {
-                $penugasan = $catatan->dosen->penugasanDosen->first();
-                $jenisLabel = $penugasan->jenis_penugasan === 'pembimbing_1' 
-                    ? 'Pembimbing 1' 
-                    : 'Pembimbing 2';
-                $pembimbingLabel = "{$jenisLabel}: {$catatan->dosen->nama}";
-            }
-            
-            $catatan->ditambahkan_oleh = $pembimbingLabel;
-            return $catatan;
-        });
+            ->map(function($catatan) use ($dosen) { // ← use ($dosen) penting!
+                // Format label pembimbing
+                $pembimbingLabel = '-';
+                if ($catatan->dosen && $catatan->dosen->penugasanDosen->isNotEmpty()) {
+                    $penugasan = $catatan->dosen->penugasanDosen->first();
+                    $jenisLabel = $penugasan->jenis_penugasan === 'pembimbing_1' 
+                        ? 'Pembimbing 1' 
+                        : 'Pembimbing 2';
+                    $pembimbingLabel = "{$jenisLabel}: {$catatan->dosen->nama}";
+                }
+                
+                $catatan->ditambahkan_oleh = $pembimbingLabel;
+                $catatan->is_owner = $catatan->dosen_id === $dosen->id; // ← TAMBAH INI
+                return $catatan;
+            });
+
+        $isPembimbing1 = $penugasan->jenis_penugasan === 'pembimbing_1';
 
         $bimbinganDone = CatatanBimbingan::where('mahasiswa_id', $mahasiswaId)
             ->where('untuk_ujian', $whatUjian)
             ->count();
-        
-        $canMarkLayakUji = $bimbinganDone >= $minimalBimbinganNext;
-        
+            
         // Check if already ada layak_uji dari pembimbing lain
         $hasLayakUji = CatatanBimbingan::where('mahasiswa_id', $mahasiswaId)
-            ->where('untuk_ujian', $whatUjian)
-            ->where('status', 'layak_uji')
-            ->exists();
-
+        ->where('untuk_ujian', $whatUjian)
+        ->where('status', 'layak_uji')
+        ->exists();
+        
+        $canMarkLayakUji = $isPembimbing1 && $bimbinganDone >= $minimalBimbinganNext && !$hasLayakUji;
 
         return response()->json([
             'mahasiswa' => [
@@ -220,6 +222,7 @@ class DosenBimbinganController extends Controller
             'countdown' => $countdown,
             'minimal_bimbingan_next' => $minimalBimbinganNext,
             'can_mark_layak_uji' => $canMarkLayakUji && !$hasLayakUji,
+            'is_pembimbing_1' => $isPembimbing1,
             'jumlah_bimbingan' => $bimbinganDone,
             'has_layak_uji' => $hasLayakUji,
             'is_gugur' => $mahasiswa->tahap_ta === 'gugur', // ✅ Just read status (Observer handles update)
@@ -327,6 +330,16 @@ public function showCatatan(Request $request, $mahasiswaId, $catatanId)
         ]);
 
         if ($validated['status'] === 'layak_uji') {
+            // ✅ NEW: Check if pembimbing 1
+            if ($penugasan->jenis_penugasan !== 'pembimbing_1') {
+                return response()->json([
+                    'message' => 'Hanya Pembimbing 1 yang dapat memberikan status layak uji',
+                    'errors' => [
+                        'status' => ['Hanya Pembimbing 1 yang dapat memberikan status layak uji']
+                    ]
+                ], 422);
+            }
+
             $nextUjian = $this->getNextUjian($mahasiswa);
             
             // Check jumlah bimbingan
@@ -411,8 +424,21 @@ public function showCatatan(Request $request, $mahasiswaId, $catatanId)
             'status' => 'required|in:revisi,layak_uji',
             'deskripsi' => 'required|string',
         ]);
+        $penugasan = PenugasanDosen::where('dosen_id', $dosen->id)
+            ->where('mahasiswa_id', $mahasiswaId)
+            ->whereIn('jenis_penugasan', ['pembimbing_1', 'pembimbing_2'])
+            ->first();
 
         if ($validated['status'] === 'layak_uji') {
+            // ✅ NEW: Check if pembimbing 1
+            if ($penugasan->jenis_penugasan !== 'pembimbing_1') {
+                return response()->json([
+                    'message' => 'Hanya Pembimbing 1 yang dapat memberikan status layak uji',
+                    'errors' => [
+                        'status' => ['Hanya Pembimbing 1 yang dapat memberikan status layak uji']
+                    ]
+                ], 422);
+            }
             $nextUjian = $this->getNextUjian($mahasiswa);
             
             // Check jumlah bimbingan

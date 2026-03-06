@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\MahasiswaPendaftaranTAController;
 use App\Http\Controllers\Api\MahasiswaPengajuanProposalController;
 use App\Http\Controllers\Api\MahasiswaBerkasTAController;
 use App\Http\Controllers\Api\MahasiswaJadwalUjianController;
+use App\Http\Controllers\Api\MahasiswaBimbinganController;
 use App\Http\Controllers\Api\MahasiswaPengajuanUjianController;
 
 use App\Http\Controllers\Api\KaprodiPendaftaranTAController;
@@ -79,6 +80,9 @@ Route::middleware(['auth:sanctum', 'role:mahasiswa'])->group(function () {
     Route::get('/berkas-ta/{id}', [MahasiswaBerkasTAController::class, 'show']);
     Route::post('/berkas-ta/{jenisBerkas}', [MahasiswaBerkasTAController::class, 'update']);
     Route::delete('/berkas-ta/{jenisBerkas}', [MahasiswaBerkasTAController::class, 'destroy']);
+
+    Route::get('/mahasiswa/bimbingan', [MahasiswaBimbinganController::class, 'index']);
+    Route::get('/mahasiswa/bimbingan/catatan/{catatanId}', [MahasiswaBimbinganController::class, 'show']);
 
     Route::get('/jadwal-ujian', [MahasiswaJadwalUjianController::class, 'index']);
     Route::get('/pengajuan-ujian', [MahasiswaPengajuanUjianController::class, 'index']);

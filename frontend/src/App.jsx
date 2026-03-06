@@ -18,6 +18,8 @@ import FormPendaftaranTA from "./pages/mahasiswa/FormPendaftaranTA";
 import FormPengajuanProposal from "./pages/mahasiswa/FormPengajuanProposal";
 import DetailPengajuanProposal from "./pages/mahasiswa/DetailPengajuanProposal";
 import JadwalUjianMahasiswa from "./pages/mahasiswa/JadwalUjian";
+import BimbinganMahasiswa from "./pages/mahasiswa/Bimbingan";
+import CatatanBimbingan from "./pages/mahasiswa/CatatanBimbingan";
 import PengajuanUjian from "./pages/mahasiswa/PengajuanUjian";
 import FormPengajuanUjian from "./pages/mahasiswa/FormPengajuanUjian";
 import DetailPengajuanUjian from "./pages/mahasiswa/DetailPengajuanUjian";
@@ -109,6 +111,14 @@ function App() {
               <Route
                 path="/mahasiswa/pengajuan-ujian/edit/:id"
                 element={<FormPengajuanUjian />}
+              />
+              <Route
+                path="/mahasiswa/bimbingan"
+                element={<BimbinganMahasiswa />}
+              />
+              <Route
+                path="/mahasiswa/bimbingan/:catatanId"
+                element={<CatatanBimbingan />}
               />
               <Route
                 path="/mahasiswa/pengajuan-ujian/:id"

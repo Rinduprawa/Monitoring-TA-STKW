@@ -27,6 +27,20 @@ export default function FormCatatanBimbingan() {
   const [bimbinganInfo, setBimbinganInfo] = useState(null);
 
   const today = new Date().toISOString().split("T")[0];
+  const statusOptions = [
+    { value: "revisi", label: "Revisi", disabled: false },
+    {
+      value: "layak_uji",
+      label: canMarkLayakUji
+        ? "Layak Uji"
+        : !bimbinganInfo?.is_pembimbing_1
+          ? "Layak Uji (Hanya Pembimbing 1)"
+          : bimbinganInfo?.has_layak_uji
+            ? "Layak Uji (Sudah ada dari Pembimbing 1)"
+            : `Layak Uji (Minimal ${bimbinganInfo?.minimal_bimbingan_next || 0} bimbingan)`,
+      disabled: !canMarkLayakUji,
+    },
+  ];
 
   useEffect(() => {
     if (isEdit) {
@@ -56,7 +70,7 @@ export default function FormCatatanBimbingan() {
         `/dosen/bimbingan/${mahasiswaId}/catatan/${catatanId}`,
       );
 
-      const data = response.data;
+      const data = response.data.catatan;
 
       setFormData({
         judul_bimbingan: data.judul_bimbingan || "",
@@ -119,24 +133,6 @@ export default function FormCatatanBimbingan() {
       setLoading(false);
     }
   };
-
-  // ✅ NEW: Build status options dengan disabled & label dinamis
-  const statusOptions = [
-    {
-      value: "revisi",
-      label: "Revisi",
-      disabled: false,
-    },
-    {
-      value: "layak_uji",
-      label: canMarkLayakUji
-        ? "Layak Uji"
-        : bimbinganInfo?.has_layak_uji
-          ? "Layak Uji (Sudah ada dari pembimbing lain)"
-          : `Layak Uji (Minimal ${bimbinganInfo?.minimal_bimbingan_next || 0} bimbingan)`,
-      disabled: !canMarkLayakUji,
-    },
-  ];
 
   return (
     <div className="p-8">

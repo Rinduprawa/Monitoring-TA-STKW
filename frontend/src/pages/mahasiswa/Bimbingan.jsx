@@ -1,44 +1,28 @@
-// src/pages/dosen/DetailBimbingan.jsx
+// src/pages/mahasiswa/Bimbingan.jsx
 
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import ConfirmDeleteModal from "../../components/modal/ConfirmDelete";
 
-export default function DetailBimbingan() {
-  const { mahasiswaId } = useParams();
+export default function Bimbingan() {
   const navigate = useNavigate();
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
 
   useEffect(() => {
     fetchDetail();
-  }, [mahasiswaId]);
+  }, []);
 
   const fetchDetail = async () => {
     try {
-      const response = await api.get(`/dosen/bimbingan/${mahasiswaId}`);
+      const response = await api.get("/mahasiswa/bimbingan");
       setData(response.data);
     } catch (error) {
-      alert("Gagal memuat data");
-      navigate("/dosen/bimbingan");
+      console.error("Failed to fetch bimbingan:", error);
+      alert("Gagal memuat data bimbingan");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      await api.delete(
-        `/dosen/bimbingan/${mahasiswaId}/catatan/${deleteModal.id}`,
-      );
-      alert("Catatan berhasil dihapus");
-      fetchDetail();
-      setDeleteModal({ isOpen: false, id: null });
-    } catch (error) {
-      alert(error.response?.data?.message || "Gagal menghapus catatan");
     }
   };
 
@@ -61,63 +45,71 @@ export default function DetailBimbingan() {
 
   const {
     mahasiswa,
+    pembimbing,
     next_ujian,
     countdown,
     minimal_bimbingan_next,
+    jumlah_bimbingan,
     is_gugur,
     catatans,
   } = data;
 
   return (
     <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold">Manajemen Catatan Bimbingan</h1>
-
-        <button
-          onClick={() => navigate(`/dosen/bimbingan/${mahasiswaId}/create`)}
-          disabled={is_gugur}
-          className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400"
-        >
-          + Tambah Catatan
-        </button>
-      </div>
+      <h1 className="text-2xl font-semibold mb-6">Catatan Bimbingan</h1>
 
       {is_gugur && (
         <div className="bg-red-50 border border-red-300 p-4 rounded mb-6">
           <p className="text-red-800 font-semibold">
-            ⚠️ Mahasiswa dinyatakan gugur karena tenggat ujian kurang dari 3
-            hari
+            ⚠️ Anda dinyatakan gugur karena tenggat ujian kurang dari 3 hari
           </p>
         </div>
       )}
 
-      {/* INFO MAHASISWA */}
+      {/* INFO CARDS */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Left Card - Mahasiswa Info */}
         <div className="bg-white border border-gray-300 p-6">
           <div className="space-y-3 text-sm">
             <div className="flex">
-              <span className="w-32 font-semibold">NIM</span>
-              <span>: {mahasiswa.nim}</span>
+              <span className="w-40 font-semibold">Judul TA</span>
+              <span>: {mahasiswa.judul_ta}</span>
             </div>
 
             <div className="flex">
-              <span className="w-32 font-semibold">Nama</span>
-              <span>: {mahasiswa.nama}</span>
-            </div>
-
-            <div className="flex">
-              <span className="w-32 font-semibold">Bentuk TA</span>
+              <span className="w-40 font-semibold">Bentuk TA</span>
               <span className="capitalize">: {mahasiswa.bentuk_ta}</span>
             </div>
 
-            <div className="flex">
-              <span className="w-32 font-semibold">Judul TA</span>
-              <span>: {mahasiswa.judul_ta}</span>
+            <div className="flex flex-col">
+              <span className="font-semibold mb-2">Pembimbing:</span>
+              <div className="ml-4 space-y-1">
+                {pembimbing.pembimbing_1 && (
+                  <div className="text-sm">
+                    <span className="font-medium">Pembimbing 1:</span>{" "}
+                    {pembimbing.pembimbing_1.nama}
+                    <br />
+                    <span className="text-xs text-gray-600">
+                      NIP: {pembimbing.pembimbing_1.nip}
+                    </span>
+                  </div>
+                )}
+                {pembimbing.pembimbing_2 && (
+                  <div className="text-sm mt-2">
+                    <span className="font-medium">Pembimbing 2:</span>{" "}
+                    {pembimbing.pembimbing_2.nama}
+                    <br />
+                    <span className="text-xs text-gray-600">
+                      NIP: {pembimbing.pembimbing_2.nip}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
 
             {next_ujian && (
               <div className="flex">
-                <span className="w-32 font-semibold">
+                <span className="w-40 font-semibold">
                   Tenggat sebelum {next_ujian}
                 </span>
                 <span
@@ -137,13 +129,15 @@ export default function DetailBimbingan() {
           </div>
         </div>
 
+        {/* Right Card - Minimal Bimbingan */}
         <div className="bg-white border border-gray-300 p-6 flex flex-col items-center justify-center">
           <p className="text-sm font-semibold mb-2">
-            Bimbingan Minimum {next_ujian ? ` ${next_ujian} ` : "Sebelumnya"}
+            Bimbingan {next_ujian ? ` ${next_ujian}` : ""}
           </p>
           <div className="text-6xl font-bold text-gray-800">
-            {minimal_bimbingan_next}
+            {jumlah_bimbingan} / {minimal_bimbingan_next}
           </div>
+          <p className="text-xs text-gray-600 mt-2">(Saat Ini / Minimum)</p>
         </div>
       </div>
 
@@ -190,17 +184,14 @@ export default function DetailBimbingan() {
                     {catatan.judul_bimbingan}
                   </td>
 
-                  {/* ✅ NEW: Untuk Ujian */}
                   <td className="p-3 border-r border-gray-300">
                     {getUjianLabel(catatan.untuk_ujian)}
                   </td>
 
-                  {/* ✅ NEW: Ditambahkan Oleh */}
-                  <td className="p-3 border-r border-gray-300">
-                    <div className="text-sm">
-                      {catatan.ditambahkan_oleh || "-"}
-                    </div>
+                  <td className="p-3 border-r border-gray-300 text-sm">
+                    {catatan.ditambahkan_oleh}
                   </td>
+
                   <td className="p-3 border-r border-gray-300">
                     <span
                       className={`px-2 py-1 text-xs border ${
@@ -213,43 +204,16 @@ export default function DetailBimbingan() {
                     </span>
                   </td>
 
-                  <td className="p-3 flex gap-2">
+                  <td className="p-3">
                     <button
                       onClick={() =>
-                        navigate(
-                          `/dosen/bimbingan/${mahasiswaId}/catatan/${catatan.id}`,
-                        )
+                        navigate(`/mahasiswa/bimbingan/${catatan.id}`)
                       }
-                      className="text-lg disabled:opacity-50"
-                      title="Edit"
+                      className="text-lg"
+                      title="Lihat Detail"
                     >
-                      👁
+                      👁️
                     </button>
-                    {catatan.is_owner && (
-                      <>
-                        <button
-                          onClick={() =>
-                            navigate(
-                              `/dosen/bimbingan/${mahasiswaId}/edit/${catatan.id}`,
-                            )
-                          }
-                          hidden={is_gugur}
-                          title="Edit"
-                          className="text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          onClick={() =>
-                            setDeleteModal({ isOpen: true, id: catatan.id })
-                          }
-                          title="Hapus"
-                          className="text-lg"
-                        >
-                          🗑️
-                        </button>
-                      </>
-                    )}
                   </td>
                 </tr>
               ))
@@ -257,13 +221,6 @@ export default function DetailBimbingan() {
           </tbody>
         </table>
       </div>
-
-      <ConfirmDeleteModal
-        isOpen={deleteModal.isOpen}
-        onClose={() => setDeleteModal({ isOpen: false, id: null })}
-        onConfirm={handleDelete}
-        message="Apakah Anda yakin ingin menghapus catatan ini?"
-      />
     </div>
   );
 }
