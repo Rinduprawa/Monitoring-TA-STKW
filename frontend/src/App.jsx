@@ -46,6 +46,9 @@ import Bimbingan from "./pages/dosen/Bimbingan";
 import DetailBimbingan from "./pages/dosen/DetailBimbingan";
 import DetailCatatanBimbingan from "./pages/dosen/DetailCatatanBimbingan";
 import FormCatatanBimbingan from "./pages/dosen/FormCatatanBimbingan";
+import PengujianTA from "./pages/dosen/PengujianTA";
+import FormPenilaian from "./pages/dosen/FormPenilaian";
+import DetailPenilaian from "./pages/dosen/DetailPenilaian";
 
 function App() {
   return (
@@ -158,6 +161,19 @@ function App() {
               <Route
                 path="/dosen/bimbingan/:mahasiswaId/catatan/:catatanId"
                 element={<DetailCatatanBimbingan />}
+              />
+              <Route path="/dosen/pengujian" element={<PengujianTA />} />
+              <Route
+                path="/dosen/pengujian/:pengujiUjianId/tambah"
+                element={<FormPenilaian />}
+              />
+              <Route
+                path="/dosen/pengujian/:pengujiUjianId/edit"
+                element={<FormPenilaian />}
+              />
+              <Route
+                path="/dosen/pengujian/:pengujiUjianId/detail"
+                element={<DetailPenilaian />}
               />
             </Route>
           </Route>

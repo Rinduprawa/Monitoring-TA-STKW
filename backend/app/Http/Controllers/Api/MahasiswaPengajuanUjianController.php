@@ -85,7 +85,7 @@ class MahasiswaPengajuanUjianController extends Controller
 
         // 4️⃣ Cek masih ada pengajuan ujian yang diproses
         $hasPending = PengajuanUjian::where('mahasiswa_id', $mahasiswa->id)
-            ->whereNotIn('status', ['ditolak_kaprodi', 'disetujui_kaprodi'])
+            ->whereNotIn('status', ['ditolak_pembimbing','ditolak_kaprodi', 'disetujui_kaprodi'])
             ->exists();
 
         if ($hasPending) {

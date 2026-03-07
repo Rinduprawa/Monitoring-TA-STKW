@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('penguji_ujian_id')->index('idx_penguji_ujian');
             $table->decimal('nilai', 5)->nullable();
             $table->text('catatan')->nullable();
+            $table->timestamp('locked_at')->nullable();
             $table->timestamps();
             $table->softDeletes()->index('idx_deleted');
 

@@ -31,6 +31,7 @@ use App\Http\Controllers\Api\DosenJadwalUjianController;
 use App\Http\Controllers\Api\DosenPenugasanController;
 use App\Http\Controllers\Api\DosenPengajuanUjianController;
 use App\Http\Controllers\Api\DosenBimbinganController;
+use App\Http\Controllers\Api\DosenPengujianController;
 
 
 // Test route
@@ -105,7 +106,7 @@ Route::middleware(['auth:sanctum', 'role:dosen'])->group(function () {
     Route::get('/dosen/bimbingan', [DosenBimbinganController::class, 'index']);
     Route::get('/dosen/bimbingan/{mahasiswaId}', [DosenBimbinganController::class, 'show']);
     Route::post('/dosen/bimbingan/{mahasiswaId}/catatan', [DosenBimbinganController::class, 'store']);
-    Route::get('/dosen/bimbingan/{mahasiswaId}/catatan/{catatanId}',[DosenBimbinganController::class, 'showCatatan']);
+    Route::get('/dosen/bimbingan/{mahasiswaId}/catatan/{catatanId}', [DosenBimbinganController::class, 'showCatatan']);
     Route::put('/dosen/bimbingan/{mahasiswaId}/catatan/{catatanId}', [DosenBimbinganController::class, 'update']);
     Route::delete('/dosen/bimbingan/{mahasiswaId}/catatan/{catatanId}', [DosenBimbinganController::class, 'destroy']);
 
@@ -113,6 +114,12 @@ Route::middleware(['auth:sanctum', 'role:dosen'])->group(function () {
     Route::post('/dosen/pengajuan-ujian/{id}/approve', [DosenPengajuanUjianController::class, 'approve']);
     Route::post('/dosen/pengajuan-ujian/{id}/reject', [DosenPengajuanUjianController::class, 'reject']);
     Route::get('/dosen/pengajuan-ujian/{id}/preview-bukti', [DosenPengajuanUjianController::class, 'previewBukti']);
+
+    Route::get('/dosen/pengujian', [DosenPengujianController::class, 'index']);
+    Route::get('/dosen/pengujian/{pengujiUjianId}', [DosenPengujianController::class, 'show']);
+    Route::post('/dosen/pengujian/{pengujiUjianId}', [DosenPengujianController::class, 'store']);
+    Route::put('/dosen/pengujian/{pengujiUjianId}', [DosenPengujianController::class, 'update']);
+    Route::delete('/dosen/pengujian/{pengujiUjianId}/catatan', [DosenPengujianController::class, 'deleteCatatan']);
 });
 
 // Khusus kaprodi

@@ -2,96 +2,121 @@ export const menuConfig = {
   admin: [
     {
       items: [
-        { path: '/admin/dashboard', label: 'Dasbor', icon: '☒' },
-        { path: '/admin/data-pengguna', label: 'Data Pengguna', icon: '☒' },
-      ]
-    }
+        { path: "/admin/dashboard", label: "Dasbor", icon: "☒" },
+        { path: "/admin/data-pengguna", label: "Data Pengguna", icon: "☒" },
+      ],
+    },
   ],
-  
+
   mahasiswa: [
     {
-      items: [
-        { path: '/mahasiswa/dashboard', label: 'Dasbor', icon: '☒' },
-      ]
+      items: [{ path: "/mahasiswa/dashboard", label: "Dasbor", icon: "☒" }],
     },
     {
       items: [
-        { path: '/mahasiswa/pendaftaran-ta', label: 'Pendaftaran Tugas Akhir', icon: '☒' },
-        { path: '/mahasiswa/pengajuan-proposal', label: 'Pengajuan Proposal', icon: '☒' },
-        { path: '/mahasiswa/pengajuan-ujian', label: 'Pengajuan Ujian', icon: '☒' },
-      ]
+        {
+          path: "/mahasiswa/pendaftaran-ta",
+          label: "Pendaftaran Tugas Akhir",
+          icon: "☒",
+        },
+        {
+          path: "/mahasiswa/pengajuan-proposal",
+          label: "Pengajuan Proposal",
+          icon: "☒",
+        },
+        {
+          path: "/mahasiswa/pengajuan-ujian",
+          label: "Pengajuan Ujian",
+          icon: "☒",
+        },
+      ],
     },
     {
       items: [
-        { path: '/mahasiswa/bimbingan', label: 'Bimbingan', icon: '☒' },
-        { path: '/mahasiswa/jadwal-ujian', label: 'Jadwal', icon: '☒' },
-      ]
+        { path: "/mahasiswa/bimbingan", label: "Bimbingan", icon: "☒" },
+        { path: "/mahasiswa/jadwal-ujian", label: "Jadwal", icon: "☒" },
+      ],
     },
     {
       items: [
-        { path: '/mahasiswa/penilaian', label: 'Penilaian', icon: '☒' },
-        { path: '/mahasiswa/berkas-ta', label: 'Berkas Tugas Akhir', icon: '☒' },
-      ]
+        { path: "/mahasiswa/penilaian", label: "Penilaian", icon: "☒" },
+        {
+          path: "/mahasiswa/berkas-ta",
+          label: "Berkas Tugas Akhir",
+          icon: "☒",
+        },
+      ],
     },
   ],
 
   dosen: [
     {
-      items: [
-        { path: '/dosen/dashboard', label: 'Dasbor', icon: '☒' },
-      ]
+      items: [{ path: "/dosen/dashboard", label: "Dasbor", icon: "☒" }],
     },
     {
       items: [
-        { path: '/dosen/jadwal-ujian', label: 'Jadwal', icon: '☒' },
-        { path: '/dosen/penugasan-dosen', label: 'Penugasan', icon: '☒' },
-      ]
+        { path: "/dosen/jadwal-ujian", label: "Jadwal", icon: "☒" },
+        { path: "/dosen/penugasan-dosen", label: "Penugasan", icon: "☒" },
+      ],
     },
     {
       items: [
-        { path: '/dosen/bimbingan', label: 'Bimbingan', icon: '☒' },
-        { path: '/dosen/pengajuan-ujian', label: 'Pengajuan Ujian', icon: '☒' },
-      ]
+        { path: "/dosen/bimbingan", label: "Bimbingan", icon: "☒" },
+        { path: "/dosen/pengajuan-ujian", label: "Pengajuan Ujian", icon: "☒" },
+        { path: "/dosen/penilaian", label: "Penilaian", icon: "☒" },
+        { path: "/dosen/berkas", label: "Berkas Tugas Akhir", icon: "☒" },
+      ],
     },
     {
-      items: [
-        { path: '/dosen/penilaian', label: 'Penilaian', icon: '☒' },
-        { path: '/dosen/berkas', label: 'Berkas Tugas Akhir', icon: '☒' },
-      ]
+      items: [{ path: "/dosen/pengujian", label: "Pengujian", icon: "☒" }],
     },
   ],
 
   kaprodi: [
     {
-      items: [
-        { path: '/kaprodi/dashboard', label: 'Dasbor', icon: '☒' },
-      ]
+      items: [{ path: "/kaprodi/dashboard", label: "Dasbor", icon: "☒" }],
     },
     {
       items: [
-        { path: '/kaprodi/pendaftaran-ta', label: 'Data Pendaftaran Tugas Akhir', icon: '☒' },
-        { path: '/kaprodi/pengajuan-proposal', label: 'Data Pengajuan Proposal', icon: '☒' },
-        { path: '/kaprodi/pengajuan-ujian', label: 'Data Pengajuan Ujian', icon: '☒' },
-      ]
+        {
+          path: "/kaprodi/pendaftaran-ta",
+          label: "Data Pendaftaran Tugas Akhir",
+          icon: "☒",
+        },
+        {
+          path: "/kaprodi/pengajuan-proposal",
+          label: "Data Pengajuan Proposal",
+          icon: "☒",
+        },
+        {
+          path: "/kaprodi/pengajuan-ujian",
+          label: "Data Pengajuan Ujian",
+          icon: "☒",
+        },
+      ],
     },
     {
       items: [
-        { path: '/kaprodi/jadwal-ujian', label: 'Jadwal Ujian', icon: '☒' },
-        { path: '/kaprodi/penugasan-dosen', label: 'Penugasan Dosen', icon: '☒' },
-      ]
+        { path: "/kaprodi/jadwal-ujian", label: "Jadwal Ujian", icon: "☒" },
+        {
+          path: "/kaprodi/penugasan-dosen",
+          label: "Penugasan Dosen",
+          icon: "☒",
+        },
+      ],
     },
     {
       items: [
-        { path: '/kaprodi/penilaian', label: 'Penilaian', icon: '☒' },
-        { path: '/kaprodi/berkas', label: 'Berkas Tugas Akhir', icon: '☒' },
-      ]
+        { path: "/kaprodi/penilaian", label: "Penilaian", icon: "☒" },
+        { path: "/kaprodi/berkas", label: "Berkas Tugas Akhir", icon: "☒" },
+      ],
     },
   ],
 };
 
 export const roleLabels = {
-  admin: 'Administrator',
-  mahasiswa: 'Mahasiswa',
-  dosen: 'Dosen',
-  kaprodi: 'Kepala Program Studi',
+  admin: "Administrator",
+  mahasiswa: "Mahasiswa",
+  dosen: "Dosen",
+  kaprodi: "Kepala Program Studi",
 };

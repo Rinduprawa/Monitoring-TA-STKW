@@ -16,6 +16,7 @@ class Penilaian extends Model
         'penguji_ujian_id',
         'nilai',
         'catatan',
+        'locked_at',
     ];
 
     protected $casts = [

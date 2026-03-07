@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Models\JadwalUjian;
+use App\Models\Penilaian;
 use App\Observers\JadwalUjianObserver;
+use App\Observers\PenilaianObserver;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         JadwalUjian::observe(JadwalUjianObserver::class);
-
+        Penilaian::observe(PenilaianObserver::class);
     }
 }
